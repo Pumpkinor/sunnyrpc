@@ -1,3 +1,4 @@
+### 获取用户信息
 POST http://localhost:9999
 Content-Type: application/json
 
@@ -6,5 +7,17 @@ Content-Type: application/json
   "method": "getUserById",
   "params": [
     "1"
+  ]
+}
+
+### 获取订单信息
+POST http://localhost:9999
+Content-Type: application/json
+
+{
+  "service": "org.sunny.sunnyprcdemoapi.interfaces.OrderService",
+  "method": "getOrderById",
+  "params": [
+    200
   ]
 }
