@@ -1,0 +1,10 @@
+POST http://localhost:9999
+Content-Type: application/json
+
+{
+  "service": "org.sunny.sunnyprcdemoapi.interfaces.UserService",
+  "method": "getUserById",
+  "params": [
+    "1"
+  ]
+}
