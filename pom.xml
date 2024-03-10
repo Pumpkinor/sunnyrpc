@@ -16,6 +16,7 @@
 	<modules>
 		<module>sunnyrpc-core</module>
 		<module>sunnyrpc-demo-provider</module>
+		<module>sunnyrpc-demo-consumer</module>
 		<module>sunnyprc-demo-api</module>
 	</modules>
 	<properties>
