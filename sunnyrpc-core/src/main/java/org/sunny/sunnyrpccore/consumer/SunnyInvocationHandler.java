@@ -34,8 +34,12 @@ public class SunnyInvocationHandler implements InvocationHandler {
         if (rpcResponse.isStatus()){
             JSONObject jsonData = (JSONObject) rpcResponse.getData();
             return jsonData.toJavaObject(method.getReturnType());
+        }else {
+            Exception ex = rpcResponse.getEx();
+            System.out.println("exsssssss->>>>>>>>");
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
-        return null;
     }
     
     OkHttpClient client = new OkHttpClient.Builder()
@@ -47,11 +51,13 @@ public class SunnyInvocationHandler implements InvocationHandler {
     
     private RpcResponse post(final RpcRequest rpcRequest) throws IOException {
         String reqJson = JSON.toJSONString(rpcRequest);
+        System.out.println("reqJson is >>>>>>>>> " + reqJson);
         Request request = new Request.Builder()
                 .url("http://localhost:9999/")
                 .post(RequestBody.create(reqJson, JSONTYPE))
                 .build();
         String respJson = client.newCall(request).execute().body().string();
+        System.out.println("respJson is >>>>>>>>> " + respJson);
         return JSON.parseObject(respJson,RpcResponse.class);
     }
 }

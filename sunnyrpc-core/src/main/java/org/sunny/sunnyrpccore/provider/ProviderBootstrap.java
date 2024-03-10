@@ -31,14 +31,20 @@ public class ProviderBootstrap implements ApplicationContextAware {
     }
 
     public RpcResponse invokeRequest(RpcRequest request) {
+        RpcResponse rpcResponse = new RpcResponse();
         Object bean = skeleton.get(request.getService());
         try {
             Method method = findMethod(bean.getClass(), request.getMethod());
             Object result = method.invoke(bean, request.getParams());
-            return new RpcResponse(true, result);
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            rpcResponse.setStatus(true);
+            rpcResponse.setData(result);
+            return rpcResponse;
+        } catch (InvocationTargetException  e) {
+            rpcResponse.setEx(new RuntimeException(e.getTargetException().getMessage()));
+        } catch (IllegalAccessException e){
+            rpcResponse.setEx(new RuntimeException(e.getMessage()));
         }
+        return rpcResponse;
     }
 
     private Method findMethod(Class<?> aClass, String method) {
