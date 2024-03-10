@@ -16,7 +16,7 @@ import org.sunny.sunnyrpccore.provider.ProviderConfig;
 
 @SpringBootApplication
 @RestController
-@Import({ProviderConfig.class})
+@Import({ProviderConfig.class}) 
 public class SunnyrpcDemoProviderApplication {
 
     public static void main(String[] args) {
@@ -26,7 +26,7 @@ public class SunnyrpcDemoProviderApplication {
     @Autowired
     ProviderBootstrap providerBootStrap;
 
-    // 使用http+json来进行通信和序列化
+// 使用http+json来进行通信和序列化
     @RequestMapping("/")
     public RpcResponse invoke(@RequestBody RpcRequest request) {
         // 通过request获取服务名、方法名和参数 来调用对应的方法
