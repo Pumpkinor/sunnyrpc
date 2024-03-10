@@ -12,4 +12,15 @@ public class UserServiceImpl implements UserService {
     public User getUserById(String id) {
         return new User("1","bob",12);
     }
+    
+    @Override
+    public Integer getID(final Integer id) {
+        return id;
+    }
+    
+    @Override
+    public String getName(final String name) {
+        return name;
+    }
+    
 }

@@ -29,6 +29,10 @@ public class SunnyrpcDemoConsumerApplication {
         return x ->{
             User user = userService.getUserById("1");
             System.out.println(user);
+            Integer id = userService.getID(222);
+            System.out.println(id);
+            String name = userService.getName("Tomas");
+            System.out.println(name);
             Order order = orderService.getOrderById(404);
             System.out.println(order);
         };

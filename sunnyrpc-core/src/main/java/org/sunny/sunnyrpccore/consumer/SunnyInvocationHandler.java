@@ -24,6 +24,11 @@ public class SunnyInvocationHandler implements InvocationHandler {
     }
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
+//        屏蔽一些方法
+        String methodName = method.getName();
+        if (methodName.equals("toString") || methodName.equals("hashCode")){
+            return null;
+        }
         RpcRequest rpcRequest = new RpcRequest();
         rpcRequest.setService(service.getCanonicalName());
         rpcRequest.setMethod(method.getName());
@@ -32,8 +37,13 @@ public class SunnyInvocationHandler implements InvocationHandler {
         RpcResponse rpcResponse = post(rpcRequest);
         
         if (rpcResponse.isStatus()){
-            JSONObject jsonData = (JSONObject) rpcResponse.getData();
-            return jsonData.toJavaObject(method.getReturnType());
+//            TODO 基本类型无法转换为json如何处理
+            Object data = rpcResponse.getData();
+            if(data instanceof JSONObject jsonResult) {
+                return jsonResult.toJavaObject(method.getReturnType());
+            } else {
+                return data;
+            }
         }else {
             Exception ex = rpcResponse.getEx();
             System.out.println("exsssssss->>>>>>>>");

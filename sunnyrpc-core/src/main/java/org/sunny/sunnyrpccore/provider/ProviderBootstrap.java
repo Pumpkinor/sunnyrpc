@@ -20,7 +20,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
 
     @PostConstruct
     public void initProviders() {
-        // 获取所有被SunnyProvider注解的provider
+        // 获取所有被SunnyProvider注解的provider 这里需要的是类的信息 不是其实例化的对象
         Map<String, Object> providers = applicationContext.getBeansWithAnnotation(SunnyProvider.class);
         // 这里的key是bean的名字 不是接口的名字
         providers.forEach((key, value) -> System.out.println(key + " : " + value));
