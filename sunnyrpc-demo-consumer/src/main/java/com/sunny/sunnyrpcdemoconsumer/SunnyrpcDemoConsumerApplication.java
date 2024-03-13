@@ -35,6 +35,7 @@ public class SunnyrpcDemoConsumerApplication {
             System.out.println(name);
             name = userService.getName(2222,"Tomas");
             System.out.println(name);
+//           TODO multiple interfaces how to test it
             Order order = orderService.getOrderById(404);
             System.out.println(order);
         };

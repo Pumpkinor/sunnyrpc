@@ -14,6 +14,7 @@ import org.sunny.sunnyrpccore.utils.MethodUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -71,14 +72,16 @@ public class ProviderBootstrap implements ApplicationContextAware {
     }
 
     private void genInterface(Object e) {
-        Class<?> itfer = e.getClass().getInterfaces()[0];
-        Method[] methods = itfer.getMethods();
-        for (Method method : methods) {
-            if (MethodUtils.checkLocalMethod(method)) {
-                continue;
+        final Class<?>[] interfaces = e.getClass().getInterfaces();
+        Arrays.stream(interfaces).forEach(itfer -> {
+            Method[] methods = itfer.getMethods();
+            for (Method method : methods) {
+                if (MethodUtils.checkLocalMethod(method)) {
+                    continue;
+                }
+                createProvider(itfer, e, method);
             }
-            createProvider(itfer, e, method);
-        }
+        });
     }
     
     private void createProvider(final Class<?> itfer, final Object e, final Method method) {
