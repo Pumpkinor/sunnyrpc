@@ -33,6 +33,8 @@ public class SunnyrpcDemoConsumerApplication {
             System.out.println(id);
             String name = userService.getName("Tomas");
             System.out.println(name);
+            name = userService.getName(2222,"Tomas");
+            System.out.println(name);
             Order order = orderService.getOrderById(404);
             System.out.println(order);
         };

@@ -37,7 +37,7 @@ public class SunnyrpcDemoProviderApplication {
     @Bean
     ApplicationRunner providerRunner() {
         return args -> {
-            RpcRequest request = new RpcRequest("org.sunny.sunnyprcdemoapi.interfaces.UserService", "getUserById", new String[]{"1"});
+            RpcRequest request = new RpcRequest("org.sunny.sunnyprcdemoapi.interfaces.UserService", "getUserById@1_class java.lang.String", new String[]{"1"});
             System.out.println("return is : " + providerBootStrap.invokeRequest(request));
         };
     }

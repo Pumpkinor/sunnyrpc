@@ -9,6 +9,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.sunny.sunnyrpccore.api.RpcRequest;
 import org.sunny.sunnyrpccore.api.RpcResponse;
+import org.sunny.sunnyrpccore.utils.MethodUtils;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
@@ -26,12 +27,12 @@ public class SunnyInvocationHandler implements InvocationHandler {
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
 //        屏蔽一些方法
         String methodName = method.getName();
-        if (methodName.equals("toString") || methodName.equals("hashCode")){
+        if (MethodUtils.checkLocalMethod(methodName)){
             return null;
         }
         RpcRequest rpcRequest = new RpcRequest();
         rpcRequest.setService(service.getCanonicalName());
-        rpcRequest.setMethod(method.getName());
+        rpcRequest.setMethodSign(MethodUtils.getMethodSign(method));
         rpcRequest.setParams(args);
         
         RpcResponse rpcResponse = post(rpcRequest);

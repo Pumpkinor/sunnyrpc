@@ -19,6 +19,11 @@ public class UserServiceImpl implements UserService {
     }
     
     @Override
+    public String getName(final Integer id, final String name) {
+        return id + ":" + name;
+    }
+    
+    @Override
     public String getName(final String name) {
         return name;
     }
