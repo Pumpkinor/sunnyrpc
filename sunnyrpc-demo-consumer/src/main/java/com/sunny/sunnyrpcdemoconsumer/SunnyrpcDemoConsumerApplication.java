@@ -27,6 +27,25 @@ public class SunnyrpcDemoConsumerApplication {
     @Bean
     public ApplicationRunner consumer_runner(){
         return x ->{
+            System.out.println(" ===> userService.getLongIds()");
+            for (long id : userService.getIds()) {
+                System.out.println(id);
+            }
+            System.out.println(" ===> userService.getLongIds()");
+            for (long id : userService.getLongIds()) {
+                System.out.println(id);
+            }
+            
+            System.out.println(" ===> userService.getLongIds()");
+            for (long id : userService.getIds(new int[]{4,5,6})) {
+                System.out.println(id);
+            }
+            Long id1 = userService.getID(222L);
+            System.out.println(id1);
+            Long id2 = userService.getID(222f);
+            System.out.println(id2);
+            Long id3 = userService.getID(new User("111","bob",12));
+            System.out.println(id3);
             User user = userService.getUserById("1");
             System.out.println(user);
             Integer id = userService.getID(222);

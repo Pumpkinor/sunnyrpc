@@ -10,6 +10,7 @@ import okhttp3.RequestBody;
 import org.sunny.sunnyrpccore.api.RpcRequest;
 import org.sunny.sunnyrpccore.api.RpcResponse;
 import org.sunny.sunnyrpccore.utils.MethodUtils;
+import org.sunny.sunnyrpccore.utils.TypeUtils;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
@@ -43,7 +44,7 @@ public class SunnyInvocationHandler implements InvocationHandler {
             if(data instanceof JSONObject jsonResult) {
                 return jsonResult.toJavaObject(method.getReturnType());
             } else {
-                return data;
+                return TypeUtils.cast(data,method.getReturnType());
             }
         }else {
             Exception ex = rpcResponse.getEx();

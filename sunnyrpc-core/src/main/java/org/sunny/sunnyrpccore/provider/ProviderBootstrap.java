@@ -11,6 +11,7 @@ import org.sunny.sunnyrpccore.api.RpcRequest;
 import org.sunny.sunnyrpccore.api.RpcResponse;
 import org.sunny.sunnyrpccore.meta.ProviderMeta;
 import org.sunny.sunnyrpccore.utils.MethodUtils;
+import org.sunny.sunnyrpccore.utils.TypeUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -43,16 +44,30 @@ public class ProviderBootstrap implements ApplicationContextAware {
             ProviderMeta providerMeta = findProviderMeta(providerMetas, request.getMethodSign());
             // TODO test providerMeta == null
             Method method = providerMeta.getMethod();
-            Object result = method.invoke(providerMeta.getServiceImpl(), request.getParams());
+            Object[] actualParmas = processArgs(request.getParams(), method.getParameterTypes());
+            Object result = method.invoke(providerMeta.getServiceImpl(), actualParmas);
             rpcResponse.setStatus(true);
             rpcResponse.setData(result);
             return rpcResponse;
         } catch (InvocationTargetException  e) {
+            e.printStackTrace();
             rpcResponse.setEx(new RuntimeException(e.getTargetException().getMessage()));
         } catch (IllegalAccessException e){
+            e.printStackTrace();
             rpcResponse.setEx(new RuntimeException(e.getMessage()));
         }
         return rpcResponse;
+    }
+    
+    private Object[] processArgs(final Object[] params, final Class<?>[] parameterTypes) {
+        if (params == null || params.length == 0){
+            return params;
+        }
+        Object[] actualParmas = new Object[params.length];
+        for (int i = 0; i < params.length; i++) {
+            actualParmas[i] = TypeUtils.cast(params[i], parameterTypes[i]);
+        }
+        return actualParmas;
     }
     
     private ProviderMeta findProviderMeta(final List<ProviderMeta> providerMetas, final String methodSign) {
