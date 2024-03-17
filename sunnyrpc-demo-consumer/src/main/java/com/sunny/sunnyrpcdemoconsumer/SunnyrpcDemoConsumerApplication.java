@@ -12,6 +12,10 @@ import org.sunny.sunnyprcdemoapi.interfaces.UserService;
 import org.sunny.sunnyrpccore.annotation.SunnyConsumer;
 import org.sunny.sunnyrpccore.consumer.ConsumerConfig;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @SpringBootApplication
 @Import({ConsumerConfig.class})
 public class SunnyrpcDemoConsumerApplication {
@@ -27,6 +31,26 @@ public class SunnyrpcDemoConsumerApplication {
     @Bean
     public ApplicationRunner consumer_runner(){
         return x ->{
+            // 测试参数和返回值都是List类型
+            System.out.println("Case 11. >>===[测试参数和返回值都是List类型]===");
+            List<User> list = userService.getList(List.of(
+                    new User("100", "KK100",100),
+                    new User("101", "KK101",12)));
+            list.forEach(System.out::println);
+            
+            // 测试参数和返回值都是Map类型
+            System.out.println("Case 12. >>===[测试参数和返回值都是Map类型]===");
+            Map<String, User> map = new HashMap<>();
+            map.put("A200", new User("200", "KK200",20));
+            map.put("A201", new User("201", "KK201",21));
+            userService.getMap(map).forEach(
+                    (k,v) -> System.out.println(k + " -> " + v)
+            );
+            
+            System.out.println("Case 13. >>===[测试参数和返回值都是Boolean/boolean类型]===");
+            System.out.println("userService.getFlag(false) = " + userService.getFlag(false));
+            
+            
             System.out.println(" ===> userService.getLongIds()");
             for (long id : userService.getIds()) {
                 System.out.println(id);

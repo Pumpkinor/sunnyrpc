@@ -7,6 +7,9 @@ import org.sunny.sunnyprcdemoapi.interfaces.UserAddrService;
 import org.sunny.sunnyprcdemoapi.interfaces.UserService;
 import org.sunny.sunnyrpccore.annotation.SunnyProvider;
 
+import java.util.List;
+import java.util.Map;
+
 @SunnyProvider
 @Component
 public class UserServiceImpl implements UserService, UserAddrService
@@ -58,6 +61,21 @@ public class UserServiceImpl implements UserService, UserAddrService
     @Override
     public String getName(final String name) {
         return name;
+    }
+    
+    @Override
+    public List<User> getList(final List<User> userList) {
+        return userList;
+    }
+    
+    @Override
+    public Map<String, User> getMap(final Map<String, User> userMap) {
+        return userMap;
+    }
+    
+    @Override
+    public Boolean getFlag(final boolean flag) {
+        return flag;
     }
     
     @Override

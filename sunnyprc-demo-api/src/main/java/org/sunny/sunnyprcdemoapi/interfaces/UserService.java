@@ -2,6 +2,9 @@ package org.sunny.sunnyprcdemoapi.interfaces;
 
 import org.sunny.sunnyprcdemoapi.domian.User;
 
+import java.util.List;
+import java.util.Map;
+
 public interface UserService {
     User getUserById(String name);
     
@@ -19,4 +22,10 @@ public interface UserService {
     String getName(Integer id, String name);
     
     String getName(String name);
+    
+    List<User> getList(List<User> userList);
+    
+    Map<String, User> getMap(Map<String, User> userMap);
+    
+    Boolean getFlag(boolean flag);
 }

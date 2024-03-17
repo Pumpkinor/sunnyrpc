@@ -33,6 +33,10 @@ public class TypeUtils {
             JSONObject jsonObject = new JSONObject(map);
             return jsonObject.toJavaObject(type);
         }
+        
+        if (origin instanceof JSONObject jsonObject) {
+            return jsonObject.toJavaObject(type);
+        }
 
         if(type.equals(Integer.class) || type.equals(Integer.TYPE)) {
             return Integer.valueOf(origin.toString());
