@@ -25,6 +25,8 @@ public interface UserService {
     
     List<User> getList(List<User> userList);
     
+    User[] findUsers(User[] users);
+    
     Map<String, User> getMap(Map<String, User> userMap);
     
     Boolean getFlag(boolean flag);

@@ -71,6 +71,10 @@ public class UserServiceImpl implements UserService, UserAddrService
     public List<User> getList(final List<User> userList) {
         return userList;
     }
+    @Override
+    public User[] findUsers(User[] users) {
+        return users;
+    }
     
     @Override
     public Map<String, User> getMap(final Map<String, User> userMap) {
