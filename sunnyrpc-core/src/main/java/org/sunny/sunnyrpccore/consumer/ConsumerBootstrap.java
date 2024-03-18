@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 import org.sunny.sunnyrpccore.annotation.SunnyConsumer;
 import org.sunny.sunnyrpccore.api.LoadBalancer;
 import org.sunny.sunnyrpccore.api.Router;
+import org.sunny.sunnyrpccore.api.RpcContext;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
@@ -25,9 +26,11 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
     private Map<String, Object> stub = new HashMap<>();
 //    创建代理类并且注入
     public void start(){
+        RpcContext  rpcContext = new RpcContext();
         Router router = applicationContext.getBean(Router.class);
         LoadBalancer loadBalancer = applicationContext.getBean(LoadBalancer.class);
-        
+        rpcContext.setRouter(router);
+        rpcContext.setLoadBalancer(loadBalancer);
         String urls = environment.getProperty("sunnyrpc.providers","");
         if (StringUtils.isEmpty(urls)){
             System.out.println("sunnyrpc.providers is empty");
@@ -45,7 +48,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
                 String serviceName = service.getCanonicalName();
                 Object consumer = stub.get(serviceName);
                 if (consumer == null){
-                    consumer = createConsumer(service, router, loadBalancer, providers);
+                    consumer = createConsumer(service, rpcContext, List.of(providers));
                 }
                 e.setAccessible(true);
                 try {
@@ -57,9 +60,9 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
         }
     }
     
-    private Object createConsumer(final Class<?> service, final Router router, final LoadBalancer loadBalancer, final String[] providers) {
+    private Object createConsumer(final Class<?> service, final RpcContext rpcContext, final List<String> providers) {
 //        jdk 动态代理
-        return Proxy.newProxyInstance(service.getClassLoader(), new Class[]{service}, new SunnyInvocationHandler(service, router, loadBalancer, providers));
+        return Proxy.newProxyInstance(service.getClassLoader(), new Class[]{service}, new SunnyInvocationHandler(service, rpcContext, providers));
     }
     
     private List<Field> findAnnotatedField(Class<?> aClass){

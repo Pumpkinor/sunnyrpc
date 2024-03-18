@@ -9,8 +9,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.jetbrains.annotations.Nullable;
-import org.sunny.sunnyrpccore.api.LoadBalancer;
-import org.sunny.sunnyrpccore.api.Router;
+import org.sunny.sunnyrpccore.api.RpcContext;
 import org.sunny.sunnyrpccore.api.RpcRequest;
 import org.sunny.sunnyrpccore.api.RpcResponse;
 import org.sunny.sunnyrpccore.utils.MethodUtils;
@@ -32,13 +31,11 @@ import java.util.concurrent.TimeUnit;
 public class SunnyInvocationHandler implements InvocationHandler {
     final static MediaType JSONTYPE = MediaType.get("application/json; charset=utf-8");
     Class<?> service;
-    Router router;
-    LoadBalancer loadBalancer;
-    String[] providers;
-    public SunnyInvocationHandler(Class<?> clazz, Router router, LoadBalancer loadBalancer, String[] providers){
+    RpcContext rpcContext;
+    List<String> providers;
+    public SunnyInvocationHandler(Class<?> clazz, RpcContext rpcContext, List<String> providers){
         this.service = clazz;
-        this.router = router;
-        this.loadBalancer = loadBalancer;
+        this.rpcContext = rpcContext;
         this.providers = providers;
     }
     @Override
@@ -53,8 +50,8 @@ public class SunnyInvocationHandler implements InvocationHandler {
         rpcRequest.setMethodSign(MethodUtils.getMethodSign(method));
         rpcRequest.setParams(args);
         
-        List<String> urls = router.route(List.of(providers));
-        String url = (String) loadBalancer.choose(urls);
+        List<String> urls = rpcContext.getRouter().route(providers);
+        String url = (String) rpcContext.getLoadBalancer().choose(urls);
         
         RpcResponse rpcResponse = post(rpcRequest, url);
         
