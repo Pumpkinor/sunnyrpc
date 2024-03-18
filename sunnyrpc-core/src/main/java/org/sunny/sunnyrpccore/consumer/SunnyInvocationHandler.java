@@ -49,7 +49,6 @@ public class SunnyInvocationHandler implements InvocationHandler {
         rpcRequest.setService(service.getCanonicalName());
         rpcRequest.setMethodSign(MethodUtils.getMethodSign(method));
         rpcRequest.setParams(args);
-        
         List<String> urls = rpcContext.getRouter().route(providers);
         String url = (String) rpcContext.getLoadBalancer().choose(urls);
         

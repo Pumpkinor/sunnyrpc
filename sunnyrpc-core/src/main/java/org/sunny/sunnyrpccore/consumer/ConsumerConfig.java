@@ -1,16 +1,23 @@
 package org.sunny.sunnyrpccore.consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.sunny.sunnyrpccore.api.LoadBalancer;
+import org.sunny.sunnyrpccore.api.RegisterCenter;
+import org.sunny.sunnyrpccore.api.RegisterCenter.StaticRegisterCenter;
 import org.sunny.sunnyrpccore.api.Router;
 import org.sunny.sunnyrpccore.cluster.RoundRibonLoadBalancer;
 
+import java.util.List;
+
 @Configuration
 public class ConsumerConfig {
+    @Value("${sunnyrpc.providers}")
+    String services;
     @Bean
     ConsumerBootstrap createConsumerBootstrap(){
         return new ConsumerBootstrap();
@@ -35,5 +42,10 @@ public class ConsumerConfig {
     @Bean
     public Router router(){
         return Router.Default;
+    }
+    
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    public RegisterCenter consumer_rc(){
+        return new StaticRegisterCenter(List.of(services.split(",")));
     }
 }
