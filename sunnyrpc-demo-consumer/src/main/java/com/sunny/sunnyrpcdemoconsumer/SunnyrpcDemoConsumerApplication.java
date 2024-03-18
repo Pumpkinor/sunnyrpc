@@ -31,13 +31,13 @@ public class SunnyrpcDemoConsumerApplication {
     @Bean
     public ApplicationRunner consumer_runner(){
         return x ->{
-            // 测试参数和返回值都是List类型
+//            // 测试参数和返回值都是List类型
             System.out.println("Case 11. >>===[测试参数和返回值都是List类型]===");
             List<User> list = userService.getList(List.of(
                     new User("100", "KK100",100),
                     new User("101", "KK101",12)));
             list.forEach(System.out::println);
-            
+
             // 测试参数和返回值都是Map类型
             System.out.println("Case 12. >>===[测试参数和返回值都是Map类型]===");
             Map<String, User> map = new HashMap<>();
