@@ -1,9 +1,15 @@
 package org.sunny.sunnyrpccore.consumer;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 import org.sunny.sunnyrpccore.annotation.SunnyConsumer;
+import org.sunny.sunnyrpccore.api.LoadBalancer;
+import org.sunny.sunnyrpccore.api.Router;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
@@ -12,12 +18,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ConsumerBootstrap implements ApplicationContextAware {
+public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAware {
     ApplicationContext applicationContext;
+    Environment environment;
     
     private Map<String, Object> stub = new HashMap<>();
 //    创建代理类并且注入
     public void start(){
+        Router router = applicationContext.getBean(Router.class);
+        LoadBalancer loadBalancer = applicationContext.getBean(LoadBalancer.class);
+        
+        String urls = environment.getProperty("sunnyrpc.providers","");
+        if (StringUtils.isEmpty(urls)){
+            System.out.println("sunnyrpc.providers is empty");
+        }
+        String[] providers = urls.split(",");
+        
         String[] beanNames = applicationContext.getBeanDefinitionNames();
         for (final String beanName : beanNames) {
             Object bean = applicationContext.getBean(beanName);
@@ -29,7 +45,7 @@ public class ConsumerBootstrap implements ApplicationContextAware {
                 String serviceName = service.getCanonicalName();
                 Object consumer = stub.get(serviceName);
                 if (consumer == null){
-                    consumer = createConsumer(service);
+                    consumer = createConsumer(service, router, loadBalancer, providers);
                 }
                 e.setAccessible(true);
                 try {
@@ -41,9 +57,9 @@ public class ConsumerBootstrap implements ApplicationContextAware {
         }
     }
     
-    private Object createConsumer(final Class<?> service) {
+    private Object createConsumer(final Class<?> service, final Router router, final LoadBalancer loadBalancer, final String[] providers) {
 //        jdk 动态代理
-        return Proxy.newProxyInstance(service.getClassLoader(), new Class[]{service}, new SunnyInvocationHandler(service));
+        return Proxy.newProxyInstance(service.getClassLoader(), new Class[]{service}, new SunnyInvocationHandler(service, router, loadBalancer, providers));
     }
     
     private List<Field> findAnnotatedField(Class<?> aClass){
@@ -63,5 +79,10 @@ public class ConsumerBootstrap implements ApplicationContextAware {
     @Override
     public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+    
+    @Override
+    public void setEnvironment(@NotNull final Environment environment) {
+        this.environment = environment;
     }
 }

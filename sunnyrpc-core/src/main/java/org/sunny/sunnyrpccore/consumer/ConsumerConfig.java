@@ -5,6 +5,9 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.sunny.sunnyrpccore.api.LoadBalancer;
+import org.sunny.sunnyrpccore.api.Router;
+import org.sunny.sunnyrpccore.cluster.RoundRibonLoadBalancer;
 
 @Configuration
 public class ConsumerConfig {
@@ -22,5 +25,15 @@ public class ConsumerConfig {
             consumerBootstrap.start();
             System.out.println("consumerBootstrap_runner end");
         };
+    }
+    
+    @Bean
+    public LoadBalancer loadBalancer(){
+        return new RoundRibonLoadBalancer();
+    }
+    
+    @Bean
+    public Router router(){
+        return Router.Default;
     }
 }

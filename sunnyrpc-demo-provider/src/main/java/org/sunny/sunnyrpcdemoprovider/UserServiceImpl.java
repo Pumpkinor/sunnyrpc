@@ -1,5 +1,7 @@
 package org.sunny.sunnyrpcdemoprovider;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.sunny.sunnyprcdemoapi.domian.Order;
 import org.sunny.sunnyprcdemoapi.domian.User;
@@ -14,9 +16,11 @@ import java.util.Map;
 @Component
 public class UserServiceImpl implements UserService, UserAddrService
 {
+    @Autowired
+    Environment environment;
     @Override
     public User getUserById(String id) {
-        return new User("1","bob",12);
+        return new User("1","bob - port is : " + environment.getProperty("server.port") ,12);
     }
     
     @Override

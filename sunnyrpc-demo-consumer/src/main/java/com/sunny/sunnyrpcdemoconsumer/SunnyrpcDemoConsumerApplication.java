@@ -5,7 +5,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.sunny.sunnyprcdemoapi.domian.Order;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.sunny.sunnyprcdemoapi.domian.User;
 import org.sunny.sunnyprcdemoapi.interfaces.OrderService;
 import org.sunny.sunnyprcdemoapi.interfaces.UserService;
@@ -18,6 +20,7 @@ import java.util.Map;
 
 @SpringBootApplication
 @Import({ConsumerConfig.class})
+@RestController
 public class SunnyrpcDemoConsumerApplication {
     
     public static void main(String[] args) {
@@ -28,6 +31,14 @@ public class SunnyrpcDemoConsumerApplication {
     UserService userService;
     @SunnyConsumer
     OrderService orderService;    
+    
+    @RequestMapping("/")
+    public User invoke(@RequestParam int id){
+        User user = userService.getUserById(String.valueOf(id));
+        System.out.println(user);
+        return user;
+    }
+    
     @Bean
     public ApplicationRunner consumer_runner(){
         return x ->{
@@ -79,8 +90,8 @@ public class SunnyrpcDemoConsumerApplication {
             name = userService.getName(2222,"Tomas");
             System.out.println(name);
 //           TODO multiple interfaces how to test it
-            Order order = orderService.getOrderById(404);
-            System.out.println(order);
+//            Order order = orderService.getOrderById(404);
+//            System.out.println(order);
         };
     }
 }

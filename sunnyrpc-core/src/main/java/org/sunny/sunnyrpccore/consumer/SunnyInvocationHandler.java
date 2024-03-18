@@ -9,6 +9,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.jetbrains.annotations.Nullable;
+import org.sunny.sunnyrpccore.api.LoadBalancer;
+import org.sunny.sunnyrpccore.api.Router;
 import org.sunny.sunnyrpccore.api.RpcRequest;
 import org.sunny.sunnyrpccore.api.RpcResponse;
 import org.sunny.sunnyrpccore.utils.MethodUtils;
@@ -30,9 +32,14 @@ import java.util.concurrent.TimeUnit;
 public class SunnyInvocationHandler implements InvocationHandler {
     final static MediaType JSONTYPE = MediaType.get("application/json; charset=utf-8");
     Class<?> service;
-    
-    public SunnyInvocationHandler(Class<?> clazz){
+    Router router;
+    LoadBalancer loadBalancer;
+    String[] providers;
+    public SunnyInvocationHandler(Class<?> clazz, Router router, LoadBalancer loadBalancer, String[] providers){
         this.service = clazz;
+        this.router = router;
+        this.loadBalancer = loadBalancer;
+        this.providers = providers;
     }
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
@@ -46,7 +53,10 @@ public class SunnyInvocationHandler implements InvocationHandler {
         rpcRequest.setMethodSign(MethodUtils.getMethodSign(method));
         rpcRequest.setParams(args);
         
-        RpcResponse rpcResponse = post(rpcRequest);
+        List<String> urls = router.route(List.of(providers));
+        String url = (String) loadBalancer.choose(urls);
+        
+        RpcResponse rpcResponse = post(rpcRequest, url);
         
         if (rpcResponse.isStatus()){
             Object data = rpcResponse.getData();
@@ -126,11 +136,12 @@ public class SunnyInvocationHandler implements InvocationHandler {
             .connectTimeout(1, TimeUnit.SECONDS)
             .build();
     
-    private RpcResponse post(final RpcRequest rpcRequest) throws IOException {
+    private RpcResponse post(final RpcRequest rpcRequest, final String url) throws IOException {
         String reqJson = JSON.toJSONString(rpcRequest);
+        System.out.println("call url is >>>>>>>>> " + url);
         System.out.println("reqJson is >>>>>>>>> " + reqJson);
         Request request = new Request.Builder()
-                .url("http://localhost:9999/")
+                .url(url)
                 .post(RequestBody.create(reqJson, JSONTYPE))
                 .build();
         String respJson = client.newCall(request).execute().body().string();
