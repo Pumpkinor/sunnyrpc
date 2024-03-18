@@ -60,12 +60,13 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
     private Object createConsumerFromRegister(final Class<?> service, final RpcContext rpcContext, final RegistryCenter rc) {
         String serviceName = service.getCanonicalName();
         List<String> providers = rc.fetchAll(serviceName);
-        return createConsumer(service, rpcContext, providers);
+        rpcContext.setProviders(providers);
+        return createConsumer(service, rpcContext);
     }
     
-    private Object createConsumer(final Class<?> service, final RpcContext rpcContext, final List<String> providers) {
+    private Object createConsumer(final Class<?> service, final RpcContext rpcContext) {
 //        jdk 动态代理
-        return Proxy.newProxyInstance(service.getClassLoader(), new Class[]{service}, new SunnyInvocationHandler(service, rpcContext, providers));
+        return Proxy.newProxyInstance(service.getClassLoader(), new Class[]{service}, new SunnyInvocationHandler(service, rpcContext));
     }
     
     private List<Field> findAnnotatedField(Class<?> aClass){

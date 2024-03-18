@@ -9,4 +9,5 @@ public class RpcContext {
     private Router router;
     private LoadBalancer loadBalancer;
     private List<Filter> filters;
+    private List<String> providers;
 }

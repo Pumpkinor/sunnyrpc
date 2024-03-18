@@ -32,11 +32,9 @@ public class SunnyInvocationHandler implements InvocationHandler {
     final static MediaType JSONTYPE = MediaType.get("application/json; charset=utf-8");
     Class<?> service;
     RpcContext rpcContext;
-    List<String> providers;
-    public SunnyInvocationHandler(Class<?> clazz, RpcContext rpcContext, List<String> providers){
+    public SunnyInvocationHandler(Class<?> clazz, RpcContext rpcContext){
         this.service = clazz;
         this.rpcContext = rpcContext;
-        this.providers = providers;
     }
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
@@ -49,7 +47,7 @@ public class SunnyInvocationHandler implements InvocationHandler {
         rpcRequest.setService(service.getCanonicalName());
         rpcRequest.setMethodSign(MethodUtils.getMethodSign(method));
         rpcRequest.setParams(args);
-        List<String> urls = rpcContext.getRouter().route(providers);
+        List<String> urls = rpcContext.getRouter().route(rpcContext.getProviders());
         String url = (String) rpcContext.getLoadBalancer().choose(urls);
         
         RpcResponse rpcResponse = post(rpcRequest, url);
