@@ -2,7 +2,7 @@ package org.sunny.sunnyrpccore.api;
 
 import java.util.List;
 
-public interface RegisterCenter {
+public interface RegistryCenter {
     void start();
     
     void stop();
@@ -16,7 +16,7 @@ public interface RegisterCenter {
     
     List<String> fetchAll(String service);
     
-    class StaticRegisterCenter implements RegisterCenter{
+    class StaticRegisterCenter implements RegistryCenter {
         List<String> providers;
         
         public StaticRegisterCenter(List<String> providers){

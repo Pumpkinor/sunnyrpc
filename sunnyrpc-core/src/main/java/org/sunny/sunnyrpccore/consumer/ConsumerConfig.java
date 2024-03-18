@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.sunny.sunnyrpccore.api.LoadBalancer;
-import org.sunny.sunnyrpccore.api.RegisterCenter;
-import org.sunny.sunnyrpccore.api.RegisterCenter.StaticRegisterCenter;
+import org.sunny.sunnyrpccore.api.RegistryCenter;
+import org.sunny.sunnyrpccore.api.RegistryCenter.StaticRegisterCenter;
 import org.sunny.sunnyrpccore.api.Router;
 import org.sunny.sunnyrpccore.cluster.RoundRibonLoadBalancer;
 
@@ -45,7 +45,7 @@ public class ConsumerConfig {
     }
     
     @Bean(initMethod = "start", destroyMethod = "stop")
-    public RegisterCenter consumer_rc(){
+    public RegistryCenter consumer_rc(){
         return new StaticRegisterCenter(List.of(services.split(",")));
     }
 }

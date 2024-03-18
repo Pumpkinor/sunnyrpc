@@ -8,7 +8,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.sunny.sunnyrpccore.annotation.SunnyConsumer;
 import org.sunny.sunnyrpccore.api.LoadBalancer;
-import org.sunny.sunnyrpccore.api.RegisterCenter;
+import org.sunny.sunnyrpccore.api.RegistryCenter;
 import org.sunny.sunnyrpccore.api.Router;
 import org.sunny.sunnyrpccore.api.RpcContext;
 
@@ -27,7 +27,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
 //    创建代理类并且注入
     public void start(){
         RpcContext  rpcContext = new RpcContext();
-        RegisterCenter rc = applicationContext.getBean(RegisterCenter.class);
+        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
         Router router = applicationContext.getBean(Router.class);
         LoadBalancer loadBalancer = applicationContext.getBean(LoadBalancer.class);
         rpcContext.setRouter(router);
@@ -57,7 +57,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
         }
     }
     
-    private Object createConsumerFromRegister(final Class<?> service, final RpcContext rpcContext, final RegisterCenter rc) {
+    private Object createConsumerFromRegister(final Class<?> service, final RpcContext rpcContext, final RegistryCenter rc) {
         String serviceName = service.getCanonicalName();
         List<String> providers = rc.fetchAll(serviceName);
         return createConsumer(service, rpcContext, providers);
