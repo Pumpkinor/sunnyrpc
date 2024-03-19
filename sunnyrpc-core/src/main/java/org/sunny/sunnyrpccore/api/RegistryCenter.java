@@ -16,6 +16,8 @@ public interface RegistryCenter {
     
     List<String> fetchAll(String service);
     
+//    void subscribe();
+    
     class StaticRegisterCenter implements RegistryCenter {
         List<String> providers;
         

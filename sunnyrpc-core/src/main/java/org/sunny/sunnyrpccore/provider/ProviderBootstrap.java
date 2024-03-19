@@ -1,12 +1,16 @@
 package org.sunny.sunnyrpccore.provider;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import lombok.SneakyThrows;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.sunny.sunnyrpccore.annotation.SunnyProvider;
+import org.sunny.sunnyrpccore.api.RegistryCenter;
 import org.sunny.sunnyrpccore.api.RpcRequest;
 import org.sunny.sunnyrpccore.api.RpcResponse;
 import org.sunny.sunnyrpccore.meta.ProviderMeta;
@@ -15,6 +19,8 @@ import org.sunny.sunnyrpccore.utils.TypeUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +30,10 @@ public class ProviderBootstrap implements ApplicationContextAware {
     ApplicationContext applicationContext;
 
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
-
+    private String instance;
+    @Value("${server.port}")
+    private String port;
+    @SneakyThrows
     @PostConstruct
     public void initProviders() {
         // 获取所有被SunnyProvider注解的provider 这里需要的是类的信息 不是其实例化的对象
@@ -33,10 +42,30 @@ public class ProviderBootstrap implements ApplicationContextAware {
         providers.forEach((key, value) -> System.out.println(key + " : " + value));
         // 需要将bean的名字转化为接口名
         providers.values().forEach(this::genInterface);
-        System.out.println("sunnyrpc-demo-provider start");
-
     }
-
+    
+    public void start() throws UnknownHostException {
+//        注册instance到zk 需要等待spring应用完全启动至可用状态
+        String ip = InetAddress.getLocalHost().getHostAddress();
+        this.instance = ip + "_" + port;
+        skeleton.keySet().forEach(this::registerService);
+        System.out.println("sunnyrpc-demo-provider start");
+    }
+    @PreDestroy
+    public void stop(){
+        skeleton.keySet().forEach(this::unRegisterService);
+    }
+    
+    private void unRegisterService(String service) {
+        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
+        rc.unRegister(service, instance);
+    }
+    
+    private void registerService(String service) {
+        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
+        rc.register(service, instance);
+    }
+    
     public RpcResponse invokeRequest(RpcRequest request) {
         RpcResponse rpcResponse = new RpcResponse();
         List<ProviderMeta> providerMetas = skeleton.get(request.getService());
