@@ -1,8 +1,10 @@
 package org.sunny.sunnyrpccore.registry;
 
+import lombok.SneakyThrows;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.sunny.sunnyrpccore.api.RegistryCenter;
@@ -70,6 +72,30 @@ public class ZkRegistryCenter implements RegistryCenter {
     
     @Override
     public List<String> fetchAll(final String service) {
-        return null;
+        String servicePath = "/" + service;
+        List<String> nodes = null;
+        try {
+            nodes = client.getChildren().forPath(servicePath);
+            System.out.println("fetch all instance from zk: ");
+            nodes.forEach(System.out::println);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return nodes;
+    }
+    
+    @SneakyThrows
+    @Override
+    public void subscribe(final String service, final ChangedListener changedListener) {
+        String servicePath = "/" + service;
+        final TreeCache treeCache= TreeCache.newBuilder(client,servicePath)
+                .setCacheData(true).setMaxDepth(2).build();
+        treeCache.getListenable().addListener((curator,event)->{
+//            zk有任何节点变化 这里的代码就会执行
+            System.out.println("zk event subscribe : " + event);
+            List<String> nodes = fetchAll(service);
+            changedListener.fire(new Event(nodes));
+        });
+        treeCache.start();
     }
 }

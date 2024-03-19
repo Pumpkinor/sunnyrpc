@@ -1,5 +1,7 @@
 package org.sunny.sunnyrpccore.api;
 
+import org.sunny.sunnyrpccore.registry.ChangedListener;
+
 import java.util.List;
 
 public interface RegistryCenter {
@@ -16,7 +18,8 @@ public interface RegistryCenter {
     
     List<String> fetchAll(String service);
     
-//    void subscribe();
+    void subscribe(String service, ChangedListener changedListener);
+//    void heartbeat();
     
     class StaticRegisterCenter implements RegistryCenter {
         List<String> providers;
@@ -47,6 +50,11 @@ public interface RegistryCenter {
         @Override
         public List<String> fetchAll(final String service) {
             return providers;
+        }
+        
+        @Override
+        public void subscribe(final String service, final ChangedListener changedListener) {
+            
         }
     }
 

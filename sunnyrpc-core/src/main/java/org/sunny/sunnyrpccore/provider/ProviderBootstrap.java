@@ -47,6 +47,8 @@ public class ProviderBootstrap implements ApplicationContextAware {
     public void start() throws UnknownHostException {
 //        注册instance到zk 需要等待spring应用完全启动至可用状态
         String ip = InetAddress.getLocalHost().getHostAddress();
+//        InetAddress.getLocalHost().getHostAddress()在windows下没问题，在linux下是根据主机名在hosts文件对应的ip来获取IP地址的
+//        String ip = InetAddress.getLocalHost().getHostAddress();
         this.instance = ip + "_" + port;
         skeleton.keySet().forEach(this::registerService);
         System.out.println("sunnyrpc-demo-provider start");
