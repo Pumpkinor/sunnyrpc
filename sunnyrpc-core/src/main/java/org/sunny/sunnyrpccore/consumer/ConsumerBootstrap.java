@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAware {
     ApplicationContext applicationContext;
     Environment environment;
-    
+//    stub作为一个缓存 在多个类需要将consumer的实例作为属性注入的时候 可以提高性能
     private final Map<String, Object> stub = new HashMap<>();
 //    创建代理类并且注入
     public void start(){
@@ -40,16 +40,19 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
             Object bean = applicationContext.getBean(beanName);
             List<Field> fieldList = MethodUtils.findAnnotatedField(bean.getClass(), SunnyConsumer.class);
 //            给每个带有注解的对象创建对应的代理对象
-            fieldList.stream().forEach(e->{
+            fieldList.forEach(e->{
                 System.out.println("field name -> "+e.getName());
                 Class<?> service = e.getType();
                 String serviceName = service.getCanonicalName();
                 Object consumer = stub.get(serviceName);
                 if (consumer == null){
+//                    创建代理对象
                     consumer = createConsumerFromRegister(service, rpcContext, rc);
+                    stub.put(serviceName, consumer);
                 }
                 e.setAccessible(true);
                 try {
+//                    设置代理对象
                     e.set(bean, consumer);
                 } catch (IllegalAccessException ex) {
                     throw new RuntimeException(ex);
