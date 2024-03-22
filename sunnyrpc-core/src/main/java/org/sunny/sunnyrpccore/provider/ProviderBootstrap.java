@@ -2,6 +2,7 @@ package org.sunny.sunnyrpccore.provider;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,26 +12,21 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.sunny.sunnyrpccore.annotation.SunnyProvider;
 import org.sunny.sunnyrpccore.api.RegistryCenter;
-import org.sunny.sunnyrpccore.api.RpcRequest;
-import org.sunny.sunnyrpccore.api.RpcResponse;
 import org.sunny.sunnyrpccore.meta.ProviderMeta;
 import org.sunny.sunnyrpccore.utils.MethodUtils;
-import org.sunny.sunnyrpccore.utils.TypeUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class ProviderBootstrap implements ApplicationContextAware {
     ApplicationContext applicationContext;
     
     private RegistryCenter rc;
-    private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
+    @Getter
+    private final MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
     private String instance;
     @Value("${server.port}")
     private String port;
@@ -71,45 +67,6 @@ public class ProviderBootstrap implements ApplicationContextAware {
         rc.register(service, instance);
     }
     
-    public RpcResponse invokeRequest(RpcRequest request) {
-        RpcResponse rpcResponse = new RpcResponse();
-        List<ProviderMeta> providerMetas = skeleton.get(request.getService());
-        try {
-            ProviderMeta providerMeta = findProviderMeta(providerMetas, request.getMethodSign());
-            // TODO test providerMeta == null
-            Method method = providerMeta.getMethod();
-            Object[] actualParmas = processArgs(request.getParams(), method.getParameterTypes());
-            Object result = method.invoke(providerMeta.getServiceImpl(), actualParmas);
-            rpcResponse.setStatus(true);
-            rpcResponse.setData(result);
-            return rpcResponse;
-        } catch (InvocationTargetException  e) {
-            e.printStackTrace();
-            rpcResponse.setEx(new RuntimeException(e.getTargetException().getMessage()));
-        } catch (IllegalAccessException e){
-            e.printStackTrace();
-            rpcResponse.setEx(new RuntimeException(e.getMessage()));
-        }
-        return rpcResponse;
-    }
-    
-    private Object[] processArgs(final Object[] params, final Class<?>[] parameterTypes) {
-        if (params == null || params.length == 0){
-            return params;
-        }
-        Object[] actualParmas = new Object[params.length];
-        for (int i = 0; i < params.length; i++) {
-            actualParmas[i] = TypeUtils.cast(params[i], parameterTypes[i]);
-        }
-        return actualParmas;
-    }
-    
-    private ProviderMeta findProviderMeta(final List<ProviderMeta> providerMetas, final String methodSign) {
-        Optional<ProviderMeta> optional = providerMetas.stream()
-                .filter(x -> x.getMethodSign().equals(methodSign)).findFirst();
-        return optional.orElse(null);
-    }
-    
     private Method findMethod(Class<?> aClass, String method) {
         Method[] methods = aClass.getMethods();
         for (Method value : methods) {
@@ -146,4 +103,5 @@ public class ProviderBootstrap implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
+    
 }

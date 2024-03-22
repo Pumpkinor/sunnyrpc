@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.sunny.sunnyrpccore.api.RpcRequest;
 import org.sunny.sunnyrpccore.api.RpcResponse;
-import org.sunny.sunnyrpccore.provider.ProviderBootstrap;
 import org.sunny.sunnyrpccore.provider.ProviderConfig;
+import org.sunny.sunnyrpccore.provider.ProviderInvoker;
 
 @SpringBootApplication
 @RestController
@@ -22,15 +22,15 @@ public class SunnyrpcDemoProviderApplication {
     public static void main(String[] args) {
         SpringApplication.run(SunnyrpcDemoProviderApplication.class, args);
     }
-
+    
     @Autowired
-    ProviderBootstrap providerBootStrap;
+    ProviderInvoker providerInvoker;
 
 // 使用http+json来进行通信和序列化
     @RequestMapping("/")
-    public RpcResponse invoke(@RequestBody RpcRequest request) {
+    public RpcResponse<Object> invoke(@RequestBody RpcRequest request) {
         // 通过request获取服务名、方法名和参数 来调用对应的方法
-        return providerBootStrap.invokeRequest(request);
+        return providerInvoker.invokeRequest(request);
     }
 
 
@@ -38,7 +38,7 @@ public class SunnyrpcDemoProviderApplication {
     ApplicationRunner providerRunner() {
         return args -> {
             RpcRequest request = new RpcRequest("org.sunny.sunnyprcdemoapi.interfaces.UserService", "getUserById@1_class java.lang.String", new String[]{"1"});
-            System.out.println("return is : " + providerBootStrap.invokeRequest(request));
+            System.out.println("return is : " + providerInvoker.invokeRequest(request));
         };
     }
 }
