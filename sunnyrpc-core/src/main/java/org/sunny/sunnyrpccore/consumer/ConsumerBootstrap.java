@@ -11,10 +11,10 @@ import org.sunny.sunnyrpccore.api.LoadBalancer;
 import org.sunny.sunnyrpccore.api.RegistryCenter;
 import org.sunny.sunnyrpccore.api.Router;
 import org.sunny.sunnyrpccore.api.RpcContext;
+import org.sunny.sunnyrpccore.utils.MethodUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +24,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
     ApplicationContext applicationContext;
     Environment environment;
     
-    private Map<String, Object> stub = new HashMap<>();
+    private final Map<String, Object> stub = new HashMap<>();
 //    创建代理类并且注入
     public void start(){
         RpcContext  rpcContext = new RpcContext();
@@ -38,7 +38,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
         String[] beanNames = applicationContext.getBeanDefinitionNames();
         for (final String beanName : beanNames) {
             Object bean = applicationContext.getBean(beanName);
-            List<Field> fieldList = findAnnotatedField(bean.getClass());
+            List<Field> fieldList = MethodUtils.findAnnotatedField(bean.getClass(), SunnyConsumer.class);
 //            给每个带有注解的对象创建对应的代理对象
             fieldList.stream().forEach(e->{
                 System.out.println("field name -> "+e.getName());
@@ -82,20 +82,6 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
         return Proxy.newProxyInstance(service.getClassLoader(), new Class[]{service}, new SunnyInvocationHandler(service, rpcContext));
     }
     
-    private List<Field> findAnnotatedField(Class<?> aClass){
-        List<Field> results = new ArrayList<>();
-        while(aClass != null){
-            //        spring 管理的bean 大部分是经过增强后的类 增强后的类是原始类的子类 因此使用getDeclaredFields无法获取其原始父类的属性
-            Field[] fields = aClass.getDeclaredFields();
-            for (final Field field : fields) {
-                if (field.isAnnotationPresent(SunnyConsumer.class)){
-                    results.add(field);
-                }
-            }
-            aClass = aClass.getSuperclass();
-        }
-        return results;
-    }
     @Override
     public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
