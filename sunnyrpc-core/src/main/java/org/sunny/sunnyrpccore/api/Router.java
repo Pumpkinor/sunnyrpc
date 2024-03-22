@@ -2,8 +2,8 @@ package org.sunny.sunnyrpccore.api;
 
 import java.util.List;
 
-public interface Router {
-    List<String> route(List<String> providers);
+public interface Router<T> {
+    List<T> route(List<T> providers);
     
     Router Default = p -> p;
 }

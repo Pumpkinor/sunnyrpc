@@ -12,7 +12,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.sunny.sunnyrpccore.annotation.SunnyProvider;
 import org.sunny.sunnyrpccore.api.RegistryCenter;
+import org.sunny.sunnyrpccore.meta.InstanceMeta;
 import org.sunny.sunnyrpccore.meta.ProviderMeta;
+import org.sunny.sunnyrpccore.meta.ServiceMeta;
 import org.sunny.sunnyrpccore.utils.MethodUtils;
 
 import java.lang.reflect.Method;
@@ -25,11 +27,22 @@ public class ProviderBootstrap implements ApplicationContextAware {
     ApplicationContext applicationContext;
     
     private RegistryCenter rc;
+    
     @Getter
     private final MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
-    private String instance;
+    private InstanceMeta instanceMeta;
+    
     @Value("${server.port}")
     private String port;
+    
+    @Value("${sunnyrpc.app.id}")
+    private String app;
+    
+    @Value("${sunnyrpc.app.namespace}")
+    private String namespace;
+    
+    @Value("${sunnyrpc.app.env}")
+    private String env;
     @SneakyThrows
     @PostConstruct
     public void initProviders() {
@@ -47,7 +60,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
         String ip = InetAddress.getLocalHost().getHostAddress();
 //        InetAddress.getLocalHost().getHostAddress()在windows下没问题，在linux下是根据主机名在hosts文件对应的ip来获取IP地址的
 //        String ip = InetAddress.getLocalHost().getHostAddress();
-        this.instance = ip + "_" + port;
+        instanceMeta = InstanceMeta.http(ip, Integer.valueOf(port));
         skeleton.keySet().forEach(this::registerService);
         System.out.println("sunnyrpc-demo-provider start");
     }
@@ -59,12 +72,14 @@ public class ProviderBootstrap implements ApplicationContextAware {
     
     private void unRegisterService(String service) {
         System.out.println("start todo unRegisterService");
-        rc.unRegister(service, instance);
+        ServiceMeta serviceMeta = ServiceMeta.builder().app(app).namespace(namespace).env(env).name(service).build();
+        rc.unRegister(serviceMeta, instanceMeta);
     }
     
     private void registerService(String service) {
         RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
-        rc.register(service, instance);
+        ServiceMeta serviceMeta = ServiceMeta.builder().app(app).namespace(namespace).env(env).name(service).build();
+        rc.register(serviceMeta, instanceMeta);
     }
     
     private Method findMethod(Class<?> aClass, String method) {

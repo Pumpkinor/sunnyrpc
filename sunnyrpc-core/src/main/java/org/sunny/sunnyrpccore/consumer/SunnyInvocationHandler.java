@@ -5,6 +5,7 @@ import org.sunny.sunnyrpccore.api.RpcContext;
 import org.sunny.sunnyrpccore.api.RpcRequest;
 import org.sunny.sunnyrpccore.api.RpcResponse;
 import org.sunny.sunnyrpccore.consumer.http.OkHttpInvoker;
+import org.sunny.sunnyrpccore.meta.InstanceMeta;
 import org.sunny.sunnyrpccore.utils.MethodUtils;
 import org.sunny.sunnyrpccore.utils.TypeUtils;
 
@@ -29,9 +30,10 @@ public class SunnyInvocationHandler implements InvocationHandler {
             return null;
         }
         RpcRequest rpcRequest = getRpcRequest(method, args);
-        List<String> urls = rpcContext.getRouter().route(rpcContext.getProviders());
-        String url = (String) rpcContext.getLoadBalancer().choose(urls);
-        RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, url);
+        List<InstanceMeta> instances = rpcContext.getRouter().route(rpcContext.getProviders());
+        InstanceMeta instance = rpcContext.getLoadBalancer().choose(instances);
+        System.out.println("loadBalancer.choose(instances) ==> " + instance);
+        RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, instance.toUrl());
         if (rpcResponse.isStatus()){
             Object data = rpcResponse.getData();
             return TypeUtils.parseReturnData(method, data);

@@ -1,7 +1,10 @@
 package org.sunny.sunnyrpccore.api;
 
+import org.sunny.sunnyrpccore.meta.InstanceMeta;
+import org.sunny.sunnyrpccore.meta.ServiceMeta;
 import org.sunny.sunnyrpccore.registry.ChangedListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface RegistryCenter {
@@ -10,15 +13,15 @@ public interface RegistryCenter {
     void stop();
     
 //    provider use
-    void register(String service, String instance);
+    void register(ServiceMeta serviceMeta, InstanceMeta instanceMeta);
     
-    void unRegister(String service, String instance);
+    void unRegister(ServiceMeta serviceMeta, InstanceMeta instanceMeta);
     
 //    consumer use
     
-    List<String> fetchAll(String service);
+    List<InstanceMeta> fetchAll(ServiceMeta serviceMeta);
     
-    void subscribe(String service, ChangedListener changedListener);
+    void subscribe(ServiceMeta serviceMeta, ChangedListener changedListener);
 //    void heartbeat();
     
     class StaticRegisterCenter implements RegistryCenter {
@@ -38,22 +41,23 @@ public interface RegistryCenter {
         }
         
         @Override
-        public void register(final String service, final String instance) {
+        public void register(final ServiceMeta serviceMeta, final InstanceMeta instanceMeta) {
             
         }
         
         @Override
-        public void unRegister(final String service, final String instance) {
+        public void unRegister(final ServiceMeta serviceMeta, final InstanceMeta instanceMeta) {
             
         }
         
         @Override
-        public List<String> fetchAll(final String service) {
-            return providers;
+        public List<InstanceMeta> fetchAll(final ServiceMeta serviceMeta) {
+            List<InstanceMeta> list = new ArrayList<>();
+            return list;
         }
         
         @Override
-        public void subscribe(final String service, final ChangedListener changedListener) {
+        public void subscribe(final ServiceMeta serviceMeta, final ChangedListener changedListener) {
             
         }
     }
