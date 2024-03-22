@@ -28,7 +28,8 @@ import java.util.Optional;
 
 public class ProviderBootstrap implements ApplicationContextAware {
     ApplicationContext applicationContext;
-
+    
+    private RegistryCenter rc;
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
     private String instance;
     @Value("${server.port}")
@@ -36,6 +37,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
     @SneakyThrows
     @PostConstruct
     public void initProviders() {
+        rc = applicationContext.getBean(RegistryCenter.class);
         // 获取所有被SunnyProvider注解的provider 这里需要的是类的信息 不是其实例化的对象
         Map<String, Object> providers = applicationContext.getBeansWithAnnotation(SunnyProvider.class);
         // 这里的key是bean的名字 不是接口的名字
@@ -53,13 +55,14 @@ public class ProviderBootstrap implements ApplicationContextAware {
         skeleton.keySet().forEach(this::registerService);
         System.out.println("sunnyrpc-demo-provider start");
     }
+    
     @PreDestroy
     public void stop(){
         skeleton.keySet().forEach(this::unRegisterService);
     }
     
     private void unRegisterService(String service) {
-        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
+        System.out.println("start todo unRegisterService");
         rc.unRegister(service, instance);
     }
     

@@ -29,6 +29,7 @@ public class ZkRegistryCenter implements RegistryCenter {
     
     @Override
     public void stop() {
+        System.out.println("start close zk client");
         client.close();
         System.out.println("zk client closed");
     }
@@ -56,6 +57,7 @@ public class ZkRegistryCenter implements RegistryCenter {
     
     @Override
     public void unRegister(final String service, final String instance) {
+        System.out.println("start unRegister service: " + service + " instance: " + instance);
         String servicePath = "/" + service;
         try {
             if (client.checkExists().forPath(servicePath) == null){
@@ -63,7 +65,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             }
             String instancePath = servicePath + "/" + instance;
             client.delete().quietly().forPath(instancePath);
-            System.out.println("unRegister service: " + service + " instance: " + instance);
+            System.out.println("unRegistered service: " + service + " instance: " + instance);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
