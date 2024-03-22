@@ -40,8 +40,10 @@ public class ZkRegistryCenter implements RegistryCenter {
     
     @Override
     public void stop() {
-        System.out.println("start close zk client");
-        treeCache.close();
+        System.out.println("start close zk client"); 
+        if (treeCache != null){
+            treeCache.close();
+        }
         client.close();
         System.out.println("zk client closed");
     }
