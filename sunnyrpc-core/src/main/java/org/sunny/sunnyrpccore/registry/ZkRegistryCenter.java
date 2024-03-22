@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ZkRegistryCenter implements RegistryCenter {
     private CuratorFramework client = null;
-    
+    private TreeCache treeCache = null;
     @Override
     public void start() {
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000,3);
@@ -30,6 +30,7 @@ public class ZkRegistryCenter implements RegistryCenter {
     @Override
     public void stop() {
         System.out.println("start close zk client");
+        treeCache.close();
         client.close();
         System.out.println("zk client closed");
     }
@@ -90,7 +91,7 @@ public class ZkRegistryCenter implements RegistryCenter {
     @Override
     public void subscribe(final String service, final ChangedListener changedListener) {
         String servicePath = "/" + service;
-        final TreeCache treeCache= TreeCache.newBuilder(client,servicePath)
+        treeCache = TreeCache.newBuilder(client,servicePath)
                 .setCacheData(true).setMaxDepth(2).build();
         treeCache.getListenable().addListener((curator,event)->{
 //            zk有任何节点变化 这里的代码就会执行
