@@ -1,10 +1,12 @@
 package org.sunny.sunnyrpccore.meta;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.lang.reflect.Method;
 
 @Data
+@Builder
 public class ProviderMeta {
 
     Method method;

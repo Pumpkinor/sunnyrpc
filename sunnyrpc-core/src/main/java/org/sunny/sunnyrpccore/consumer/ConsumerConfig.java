@@ -10,6 +10,7 @@ import org.sunny.sunnyrpccore.api.LoadBalancer;
 import org.sunny.sunnyrpccore.api.RegistryCenter;
 import org.sunny.sunnyrpccore.api.Router;
 import org.sunny.sunnyrpccore.cluster.RoundRibonLoadBalancer;
+import org.sunny.sunnyrpccore.meta.InstanceMeta;
 import org.sunny.sunnyrpccore.registry.ZkRegistryCenter;
 
 @Configuration
@@ -33,12 +34,12 @@ public class ConsumerConfig {
     }
     
     @Bean
-    public LoadBalancer loadBalancer(){
+    public LoadBalancer<InstanceMeta> loadBalancer(){
         return new RoundRibonLoadBalancer();
     }
     
     @Bean
-    public Router router(){
+    public Router<InstanceMeta> router(){
         return Router.Default;
     }
     
