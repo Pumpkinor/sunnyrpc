@@ -52,6 +52,11 @@ public class ConsumerConfig {
         return new CacheFilter();
     }
     
+//    @Bean
+//    public Filter mockFilter(){
+//        return new MockFilter();
+//    }
+    
     @Bean(initMethod = "start", destroyMethod = "stop")
     public RegistryCenter consumer_rc(){
         return new ZkRegistryCenter();

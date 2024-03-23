@@ -36,6 +36,7 @@ public class SunnyInvocationHandler implements InvocationHandler {
         
         for (final Filter filter : rpcContext.getFilters()) {
             Object preResult = filter.preFilter(rpcRequest);
+            //          TODO  这个if 会导致无法链式执行filter吧
             if (preResult != null){
                 log.debug(filter.getClass().getName() + "=====> preFilter " + preResult);
                 return preResult;
