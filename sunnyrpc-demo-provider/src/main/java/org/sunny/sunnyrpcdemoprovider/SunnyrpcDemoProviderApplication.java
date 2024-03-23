@@ -1,5 +1,6 @@
 package org.sunny.sunnyrpcdemoprovider;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -16,7 +17,8 @@ import org.sunny.sunnyrpccore.provider.ProviderInvoker;
 
 @SpringBootApplication
 @RestController
-@Import({ProviderConfig.class}) 
+@Import({ProviderConfig.class})
+@Slf4j
 public class SunnyrpcDemoProviderApplication {
 
     public static void main(String[] args) {
@@ -38,7 +40,7 @@ public class SunnyrpcDemoProviderApplication {
     ApplicationRunner providerRunner() {
         return args -> {
             RpcRequest request = new RpcRequest("org.sunny.sunnyprcdemoapi.interfaces.UserService", "getUserById@1_class java.lang.String", new String[]{"1"});
-            System.out.println("return is : " + providerInvoker.invokeRequest(request));
+            log.info("return is : " + providerInvoker.invokeRequest(request));
         };
     }
 }

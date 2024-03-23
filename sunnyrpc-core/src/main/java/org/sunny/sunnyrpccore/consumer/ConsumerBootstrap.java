@@ -1,5 +1,6 @@
 package org.sunny.sunnyrpccore.consumer;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +22,7 @@ import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+@Slf4j
 public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAware {
     @Value("${sunnyrpc.app.id}")
     private String app;
@@ -51,7 +52,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
             List<Field> fieldList = MethodUtils.findAnnotatedField(bean.getClass(), SunnyConsumer.class);
 //            给每个带有注解的对象创建对应的代理对象
             fieldList.forEach(e->{
-                System.out.println("field name -> "+e.getName());
+                log.info("field name -> "+e.getName());
                 Class<?> service = e.getType();
                 String serviceName = service.getCanonicalName();
                 Object consumer = stub.get(serviceName);

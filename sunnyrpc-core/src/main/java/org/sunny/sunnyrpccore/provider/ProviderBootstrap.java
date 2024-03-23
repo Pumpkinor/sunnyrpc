@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -22,7 +23,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Map;
-
+@Slf4j
 public class ProviderBootstrap implements ApplicationContextAware {
     ApplicationContext applicationContext;
     
@@ -50,7 +51,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
         // 获取所有被SunnyProvider注解的provider 这里需要的是类的信息 不是其实例化的对象
         Map<String, Object> providers = applicationContext.getBeansWithAnnotation(SunnyProvider.class);
         // 这里的key是bean的名字 不是接口的名字
-        providers.forEach((key, value) -> System.out.println(key + " : " + value));
+        providers.forEach((key, value) -> log.info(key + " : " + value));
         // 需要将bean的名字转化为接口名
         providers.values().forEach(this::genInterface);
     }
@@ -62,7 +63,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
 //        String ip = InetAddress.getLocalHost().getHostAddress();
         instanceMeta = InstanceMeta.http(ip, Integer.valueOf(port));
         skeleton.keySet().forEach(this::registerService);
-        System.out.println("sunnyrpc-demo-provider start");
+        log.info("sunnyrpc-demo-provider start");
     }
     
     @PreDestroy
@@ -71,7 +72,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
     }
     
     private void unRegisterService(String service) {
-        System.out.println("start todo unRegisterService");
+        log.info("start todo unRegisterService");
         ServiceMeta serviceMeta = ServiceMeta.builder().app(app).namespace(namespace).env(env).name(service).build();
         rc.unRegister(serviceMeta, instanceMeta);
     }
@@ -107,7 +108,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
                 .method(method)
                 .methodSign(MethodUtils.getMethodSign(method))
                 .build();
-        System.out.println(" create a provider: " + providerMeta);
+        log.info(" create a provider: " + providerMeta);
         skeleton.add(service.getCanonicalName(), providerMeta);
     }
     

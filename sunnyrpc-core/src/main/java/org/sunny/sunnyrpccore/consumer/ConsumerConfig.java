@@ -1,5 +1,6 @@
 package org.sunny.sunnyrpccore.consumer;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
@@ -14,6 +15,7 @@ import org.sunny.sunnyrpccore.meta.InstanceMeta;
 import org.sunny.sunnyrpccore.registry.ZkRegistryCenter;
 
 @Configuration
+@Slf4j
 public class ConsumerConfig {
     @Value("${sunnyrpc.providers}")
     String services;
@@ -27,9 +29,9 @@ public class ConsumerConfig {
     public ApplicationRunner consumerBootstrap_runner(@Autowired ConsumerBootstrap consumerBootstrap){
 //        ApplicationRunner会在springboot启动成功后执行 此时所有的spring上下文都已经初始化完成了
         return x ->{
-            System.out.println("consumerBootstrap_runner start");
+            log.info("consumerBootstrap_runner start");
             consumerBootstrap.start();
-            System.out.println("consumerBootstrap_runner end");
+            log.info("consumerBootstrap_runner end");
         };
     }
     

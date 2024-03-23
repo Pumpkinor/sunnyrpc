@@ -1,5 +1,6 @@
 package org.sunny.sunnyrpccore.provider;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +10,7 @@ import org.sunny.sunnyrpccore.api.RegistryCenter;
 import org.sunny.sunnyrpccore.registry.ZkRegistryCenter;
 
 @Configuration
+@Slf4j
 public class ProviderConfig {
 
     @Bean
@@ -30,9 +32,9 @@ public class ProviderConfig {
     public ApplicationRunner providerBootstrap_runner(@Autowired ProviderBootstrap providerBootstrap){
         //        ApplicationRunner会在springboot启动成功后执行 此时所有的spring上下文都已经初始化完成了
         return x ->{
-            System.out.println("providerBootstrap_runner start");
+            log.info("providerBootstrap_runner start");
             providerBootstrap.start();
-            System.out.println("providerBootstrap_runner end");
+            log.info("providerBootstrap_runner end");
         };
     }
 }

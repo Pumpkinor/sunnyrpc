@@ -1,5 +1,6 @@
 package org.sunny.sunnyrpccore.consumer;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.sunny.sunnyrpccore.api.RpcContext;
 import org.sunny.sunnyrpccore.api.RpcRequest;
@@ -12,7 +13,7 @@ import org.sunny.sunnyrpccore.utils.TypeUtils;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.List;
-
+@Slf4j
 public class SunnyInvocationHandler implements InvocationHandler {
     Class<?> service;
     RpcContext rpcContext;
@@ -32,7 +33,7 @@ public class SunnyInvocationHandler implements InvocationHandler {
         RpcRequest rpcRequest = getRpcRequest(method, args);
         List<InstanceMeta> instances = rpcContext.getRouter().route(rpcContext.getProviders());
         InstanceMeta instance = rpcContext.getLoadBalancer().choose(instances);
-        System.out.println("loadBalancer.choose(instances) ==> " + instance);
+        log.debug("loadBalancer.choose(instances) ==> " + instance);
         RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, instance.toUrl());
         if (rpcResponse.isStatus()){
             Object data = rpcResponse.getData();

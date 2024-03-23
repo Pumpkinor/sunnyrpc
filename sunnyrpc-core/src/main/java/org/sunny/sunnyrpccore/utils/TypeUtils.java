@@ -2,6 +2,7 @@ package org.sunny.sunnyrpccore.utils;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
@@ -13,25 +14,25 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+@Slf4j
 public class TypeUtils {
     
     @Nullable
     public static Object parseReturnData(final Method method, final Object data) {
         Class<?> type = method.getReturnType();
-        System.out.println("method.getReturnType() = " + type);
+        log.debug("method.getReturnType() = " + type);
         if (data instanceof JSONObject jsonResult) {
             if (Map.class.isAssignableFrom(type)) {
                 Map resultMap = new HashMap();
                 //                获取一个返回值的范型
                 Type genericReturnType = method.getGenericReturnType();
-                System.out.println("genericReturnType is : " + genericReturnType);
+                log.debug("genericReturnType is : " + genericReturnType);
                 //                ParameterizedType是个什么玩意
                 if (genericReturnType instanceof ParameterizedType parameterizedType) {
                     Class<?> keyType = (Class<?>)parameterizedType.getActualTypeArguments()[0];
                     Class<?> valueType = (Class<?>)parameterizedType.getActualTypeArguments()[1];
-                    System.out.println("keyType  : " + keyType);
-                    System.out.println("valueType: " + valueType);
+                    log.debug("keyType  : " + keyType);
+                    log.debug("valueType: " + valueType);
                     jsonResult.forEach((key1, value1) -> {
                         Object key = TypeUtils.cast(key1, keyType);
                         Object value = TypeUtils.cast(value1, valueType);
@@ -59,10 +60,10 @@ public class TypeUtils {
                 List<Object> resultList = new ArrayList<>(array.length);
                 //                获取一个返回值的范型
                 Type genericReturnType = method.getGenericReturnType();
-                System.out.println("genericReturnType is : " + genericReturnType);
+                log.debug("genericReturnType is : " + genericReturnType);
                 if (genericReturnType instanceof ParameterizedType parameterizedType) {
                     Type actualType = parameterizedType.getActualTypeArguments()[0];
-                    System.out.println("actualType is : " + actualType);
+                    log.debug("actualType is : " + actualType);
                     for (Object o : array) {
                         resultList.add(TypeUtils.cast(o, (Class<?>) actualType));
                     }
