@@ -12,6 +12,7 @@ import org.sunny.sunnyrpccore.api.LoadBalancer;
 import org.sunny.sunnyrpccore.api.RegistryCenter;
 import org.sunny.sunnyrpccore.api.Router;
 import org.sunny.sunnyrpccore.api.RpcContext;
+import org.sunny.sunnyrpccore.cluster.GrayRouter;
 import org.sunny.sunnyrpccore.cluster.RoundRibonLoadBalancer;
 import org.sunny.sunnyrpccore.consumer.ConsumerBootstrap;
 import org.sunny.sunnyrpccore.meta.InstanceMeta;
@@ -51,9 +52,10 @@ public class ConsumerConfig {
     }
     
     @Bean
-    public Router<InstanceMeta> router(){
-        return Router.Default;
+    public Router<InstanceMeta> router() {
+        return new GrayRouter(consumerConfigProperties.getGrayRatio());
     }
+
     
 //    @Bean
 //    public Filter cacheFilter(){

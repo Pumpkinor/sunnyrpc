@@ -1,6 +1,7 @@
 package com.sunny.sunnyrpcdemoconsumer;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,6 +14,8 @@ import org.sunny.sunnyprcdemoapi.domian.User;
 import org.sunny.sunnyprcdemoapi.interfaces.OrderService;
 import org.sunny.sunnyprcdemoapi.interfaces.UserService;
 import org.sunny.sunnyrpccore.annotation.SunnyConsumer;
+import org.sunny.sunnyrpccore.api.Router;
+import org.sunny.sunnyrpccore.cluster.GrayRouter;
 import org.sunny.sunnyrpccore.config.ConsumerConfig;
 
 import java.util.Arrays;
@@ -48,7 +51,14 @@ public class SunnyrpcDemoConsumerApplication {
         log.info(String.valueOf(user));
         return user;
     }
+    @Autowired
+    Router router;
     
+    @RequestMapping("/gray/")
+    public String gray(@RequestParam("ratio") int ratio) {
+        ((GrayRouter)router).setGrayRatio(ratio);
+        return "OK-new gray ratio is " + ratio;
+    }
     @Bean
     public ApplicationRunner consumer_runner(){
         return x ->{

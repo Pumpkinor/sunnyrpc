@@ -18,5 +18,5 @@ sunnyrpc:
       
 logging:
   level:
-    root: debug
+    root: info
     org.sunny.sunnyrpccore: debug

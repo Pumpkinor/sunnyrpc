@@ -1,9 +1,11 @@
 ### 获取用户信息
 GET http://localhost:9990/?id=222
-### timeout
+### 测试调用超时接口
 GET http://localhost:9990/find/?timeout=2222
+### 修改灰度比例
+GET http://localhost:9990/gray/?ratio=90
 
-### setports
+### 修改超时端口
 GET http://localhost:9997/setports/?ports="9999"
 
 ### 获取用户信息
