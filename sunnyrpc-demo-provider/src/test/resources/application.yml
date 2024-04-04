@@ -1,0 +1,14 @@
+server:
+  port: 9999
+
+sunnyrpc:
+  zkServer: localhost:2182
+  zkRoot: sunnyrpc
+  app.id: app1
+  app.namespace: public
+  app.env: dev
+
+logging:
+  level:
+    root: info
+    org.sunny.sunnyrpccore: debug
