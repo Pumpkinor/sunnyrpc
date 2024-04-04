@@ -32,4 +32,6 @@ public interface UserService {
     Boolean getFlag(boolean flag);
     
     User timeOut(int timeOut);
+    
+    void setTimeOutPorts(final String timeOutPorts);
 }

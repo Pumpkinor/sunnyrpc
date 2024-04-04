@@ -3,6 +3,9 @@ GET http://localhost:9990/?id=222
 ### timeout
 GET http://localhost:9990/find/?timeout=2222
 
+### setports
+GET http://localhost:9997/setports/?ports="9999"
+
 ### 获取用户信息
 POST http://localhost:9999
 Content-Type: application/json

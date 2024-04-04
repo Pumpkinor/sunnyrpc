@@ -9,7 +9,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.sunny.sunnyprcdemoapi.interfaces.UserService;
 import org.sunny.sunnyrpccore.api.RpcRequest;
 import org.sunny.sunnyrpccore.api.RpcResponse;
 import org.sunny.sunnyrpccore.provider.ProviderConfig;
@@ -34,7 +36,13 @@ public class SunnyrpcDemoProviderApplication {
         // 通过request获取服务名、方法名和参数 来调用对应的方法
         return providerInvoker.invokeRequest(request);
     }
-
+    @Autowired
+    UserService userService;
+    @RequestMapping("/setports/")
+    public String setPorts(@RequestParam("ports") String ports){
+        userService.setTimeOutPorts(ports);
+        return "ok : " + ports;
+    }
 
     @Bean
     ApplicationRunner providerRunner() {

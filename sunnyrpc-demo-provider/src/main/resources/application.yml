@@ -1,6 +1,7 @@
 server:
   port: 9999
-
+  tomcat:
+    connection-timeout: 60000
 sunnyrpc:
   zkServer: 8.141.93.226:2181
   zkRoot: sunnyrpc
@@ -10,5 +11,5 @@ sunnyrpc:
 
 logging:
   level:
-    root: info
+    root: debug
     org.sunny.sunnyrpccore: debug

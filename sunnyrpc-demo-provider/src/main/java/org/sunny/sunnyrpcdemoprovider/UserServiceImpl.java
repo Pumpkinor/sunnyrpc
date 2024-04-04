@@ -86,17 +86,24 @@ public class UserServiceImpl implements UserService, UserAddrService
         return flag;
     }
     
+    private String timeOutPorts = "9997,9999";
+    @Override
+    public void setTimeOutPorts(final String timeOutPorts) {
+        this.timeOutPorts = timeOutPorts;
+    }
+    
     @Override
     public User timeOut(final int timeOut) {
         String port = environment.getProperty("server.port");
-        if ("9997".equals(port)){
+        assert port != null;
+        if (timeOutPorts.contains(port)){
             try {
                 Thread.sleep(timeOut);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
-        return new User("21","Pop",34);
+        return new User("21","Pop - " + port,34);
     }
     
     @Override

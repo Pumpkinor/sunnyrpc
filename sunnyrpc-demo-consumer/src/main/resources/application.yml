@@ -9,9 +9,9 @@ sunnyrpc:
   app.namespace: public
   app.env: dev
   retries: 2
-  timeout: 5
+  timeout: 1
 
 logging:
   level:
-    root: info
+    root: debug
     org.sunny.sunnyrpccore: debug

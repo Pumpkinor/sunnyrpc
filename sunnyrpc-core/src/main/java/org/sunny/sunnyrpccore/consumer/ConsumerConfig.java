@@ -7,12 +7,10 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.sunny.sunnyrpccore.api.Filter;
 import org.sunny.sunnyrpccore.api.LoadBalancer;
 import org.sunny.sunnyrpccore.api.RegistryCenter;
 import org.sunny.sunnyrpccore.api.Router;
 import org.sunny.sunnyrpccore.cluster.RoundRibonLoadBalancer;
-import org.sunny.sunnyrpccore.filter.CacheFilter;
 import org.sunny.sunnyrpccore.meta.InstanceMeta;
 import org.sunny.sunnyrpccore.registry.ZkRegistryCenter;
 
@@ -47,11 +45,11 @@ public class ConsumerConfig {
         return Router.Default;
     }
     
-    @Bean
-    public Filter cacheFilter(){
-        return new CacheFilter();
-    }
-    
+//    @Bean
+//    public Filter cacheFilter(){
+//        return new CacheFilter();
+//    }
+//    
 //    @Bean
 //    public Filter mockFilter(){
 //        return new MockFilter();

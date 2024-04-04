@@ -15,6 +15,8 @@ import org.sunny.sunnyprcdemoapi.interfaces.UserService;
 import org.sunny.sunnyrpccore.annotation.SunnyConsumer;
 import org.sunny.sunnyrpccore.consumer.ConsumerConfig;
 
+import java.util.Arrays;
+
 @SpringBootApplication
 @Import({ConsumerConfig.class})
 @RestController
@@ -31,7 +33,7 @@ public class SunnyrpcDemoConsumerApplication {
     OrderService orderService;    
     
     @RequestMapping("/")
-    public User invoke(@RequestParam int id){
+    public User invoke(@RequestParam("id") int id){
         User user = userService.getUserById(String.valueOf(id));
         log.info(String.valueOf(user));
         return user;
@@ -50,12 +52,12 @@ public class SunnyrpcDemoConsumerApplication {
 //            log.info("Case . >>===[测试超时重试]===");
 //            User user = userService.timeOut(2000);
 //            System.out.println(user);
-            //            log.info("Case 14. >>===[测试参数和返回值都是User[]类型]===");
-//            User[] users = new User[]{
-//                    new User("100", "KK100",22),
-//                    new User("101", "KK101",23)};
-//            Arrays.stream(userService.findUsers(users)).forEach(e->log.info(String.valueOf(e)));
-//            
+                        log.info("Case 14. >>===[测试参数和返回值都是User[]类型]===");
+            User[] users = new User[]{
+                    new User("100", "KK100",22),
+                    new User("101", "KK101",23)};
+            Arrays.stream(userService.findUsers(users)).forEach(e->log.info(String.valueOf(e)));
+
 //            //            // 测试参数和返回值都是List类型
 //            log.info("Case 11. >>===[测试参数和返回值都是List类型]===");
 //            List<User> list = userService.getList(List.of(
