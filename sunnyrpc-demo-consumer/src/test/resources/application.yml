@@ -8,7 +8,9 @@ sunnyrpc:
   app.id: app1
   app.namespace: public
   app.env: dev
-
+  retries: 2
+  timeout: 1
+  
 logging:
   level:
     root: info
