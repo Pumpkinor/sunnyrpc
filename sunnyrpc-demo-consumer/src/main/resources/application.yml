@@ -2,15 +2,21 @@ server:
   port: 9990
 
 sunnyrpc:
-  providers: http://localhost:9997/,http://localhost:9998/,http://localhost:9999/
-  zkServer: 8.141.93.226:2181
-  zkRoot: sunnyrpc
-  app.id: app1
-  app.namespace: public
-  app.env: dev
-  retries: 2
-  timeout: 1
-
+  zk:
+    server: 8.141.93.226:2181
+    root: sunnyrpc
+  app:
+    id: app1
+    namespace: public
+    env: dev
+  consumer:
+    retries: 2
+    timeout: 1
+    grayRatio: 10 # 0-100
+    faultLimit: 10 # 30s 内10次错误则隔离
+    halfOpenInitialDelay: 10000
+    halfOpenDelay: 60000
+    
 logging:
   level:
     root: debug

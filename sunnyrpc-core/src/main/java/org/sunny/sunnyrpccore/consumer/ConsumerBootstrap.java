@@ -3,16 +3,12 @@ package org.sunny.sunnyrpccore.consumer;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.sunny.sunnyrpccore.annotation.SunnyConsumer;
-import org.sunny.sunnyrpccore.api.Filter;
-import org.sunny.sunnyrpccore.api.LoadBalancer;
 import org.sunny.sunnyrpccore.api.RegistryCenter;
-import org.sunny.sunnyrpccore.api.Router;
 import org.sunny.sunnyrpccore.api.RpcContext;
 import org.sunny.sunnyrpccore.meta.InstanceMeta;
 import org.sunny.sunnyrpccore.meta.ServiceMeta;
@@ -25,36 +21,14 @@ import java.util.List;
 import java.util.Map;
 @Slf4j
 public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAware {
-    @Value("${sunnyrpc.app.id}")
-    private String app;
-    
-    @Value("${sunnyrpc.app.namespace}")
-    private String namespace;
-    
-    @Value("${sunnyrpc.app.env}")
-    private String env;
-    
-    @Value("${sunnyrpc.retries}")
-    private String retries;
-    
-    @Value("${sunnyrpc.timeout}")
-    private String timeOut;
     ApplicationContext applicationContext;
     Environment environment;
 //    stub作为一个缓存 在多个类需要将consumer的实例作为属性注入的时候 可以提高性能
     private final Map<String, Object> stub = new HashMap<>();
 //    创建代理类并且注入
     public void start(){
-        RpcContext rpcContext = new RpcContext();
         RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
-        List<Filter> filters = applicationContext.getBeansOfType(Filter.class).values().stream().toList();
-        Router router = applicationContext.getBean(Router.class);
-        LoadBalancer loadBalancer = applicationContext.getBean(LoadBalancer.class);
-        rpcContext.setRouter(router);
-        rpcContext.setLoadBalancer(loadBalancer);
-        rpcContext.setFilters(filters);
-        rpcContext.getParameters().put("retries" ,retries);
-        rpcContext.getParameters().put("timeout" ,timeOut);
+        RpcContext rpcContext = applicationContext.getBean(RpcContext.class);
         
         String[] beanNames = applicationContext.getBeanDefinitionNames();
         for (final String beanName : beanNames) {
@@ -85,7 +59,9 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
     private Object createConsumerFromRegister(final Class<?> service, final RpcContext rpcContext, final RegistryCenter rc) {
         String serviceName = service.getCanonicalName();
         ServiceMeta serviceMeta = ServiceMeta.builder()
-                .app(app).namespace(namespace).env(env).name(serviceName).build();
+                .app(rpcContext.getParameters().get("app.id"))
+                .namespace(rpcContext.getParameters().get("app.namespace"))
+                .env(rpcContext.getParameters().get("app.env")).name(serviceName).build();
         List<InstanceMeta> nodes = rc.fetchAll(serviceMeta);
         rpcContext.setProviders(nodes);
 //        添加订阅

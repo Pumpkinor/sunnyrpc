@@ -22,10 +22,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 @Slf4j
 public class ZkRegistryCenter implements RegistryCenter {
-    @Value("${sunnyrpc.zkServer}")
+    @Value("${sunnyrpc.zk.server:localhost:2181}")
     String servers;
     
-    @Value("${sunnyrpc.zkRoot}")
+    @Value("${sunnyrpc.zk.root:sunnyrpc}")
     String root;
     
     private CuratorFramework client = null;
@@ -109,7 +109,6 @@ public class ZkRegistryCenter implements RegistryCenter {
         return nodes.stream().map(x -> {
             String[] strArr = x.split("_");
             InstanceMeta instance = InstanceMeta.http(strArr[0], Integer.valueOf(strArr[1]));
-            log.info("instance: " + instance.toUrl());
             String nodePath = servicePath + "/" + x;
             byte[] bytes;
             try {
@@ -118,7 +117,7 @@ public class ZkRegistryCenter implements RegistryCenter {
                 throw new RuntimeException(e);
             }
             Map<String,Object> params = JSON.parseObject(new String(bytes));
-            log.info("mates: ");
+            log.info("instance: " + instance.toUrl() + "  metas:");
             params.forEach((k,v) -> {
                 log.info(k + " -> " +v);
                 instance.getParameters().put(k,v==null?null:v.toString());

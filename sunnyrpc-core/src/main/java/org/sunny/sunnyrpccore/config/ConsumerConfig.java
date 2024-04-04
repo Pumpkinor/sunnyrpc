@@ -2,24 +2,33 @@ package org.sunny.sunnyrpccore.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
+import org.sunny.sunnyrpccore.api.Filter;
 import org.sunny.sunnyrpccore.api.LoadBalancer;
 import org.sunny.sunnyrpccore.api.RegistryCenter;
 import org.sunny.sunnyrpccore.api.Router;
+import org.sunny.sunnyrpccore.api.RpcContext;
 import org.sunny.sunnyrpccore.cluster.RoundRibonLoadBalancer;
 import org.sunny.sunnyrpccore.consumer.ConsumerBootstrap;
 import org.sunny.sunnyrpccore.meta.InstanceMeta;
 import org.sunny.sunnyrpccore.registry.ZkRegistryCenter;
 
+import java.util.List;
+
 @Configuration
 @Slf4j
+@Import({AppConfigProperties.class,ConsumerConfigProperties.class})
 public class ConsumerConfig {
-    @Value("${sunnyrpc.providers}")
-    String services;
+    @Autowired
+    AppConfigProperties appConfigProperties;
+    
+    @Autowired
+    ConsumerConfigProperties consumerConfigProperties;
+    
     @Bean
     ConsumerBootstrap createConsumerBootstrap(){
         return new ConsumerBootstrap();
@@ -59,5 +68,24 @@ public class ConsumerConfig {
     @Bean(initMethod = "start", destroyMethod = "stop")
     public RegistryCenter consumer_rc(){
         return new ZkRegistryCenter();
+    }
+    
+    @Bean
+    public RpcContext createContext(@Autowired Router router,
+                                    @Autowired LoadBalancer loadBalancer,
+                                    @Autowired List<Filter> filters) {
+        RpcContext context = new RpcContext();
+        context.setRouter(router);
+        context.setLoadBalancer(loadBalancer);
+        context.setFilters(filters);
+        context.getParameters().put("app.id", appConfigProperties.getId());
+        context.getParameters().put("app.namespace", appConfigProperties.getNamespace());
+        context.getParameters().put("app.env", appConfigProperties.getEnv());
+        context.getParameters().put("consumer.retries", String.valueOf(consumerConfigProperties.getRetries()));
+        context.getParameters().put("consumer.timeout", String.valueOf(consumerConfigProperties.getTimeout()));
+        context.getParameters().put("consumer.faultLimit", String.valueOf(consumerConfigProperties.getFaultLimit()));
+        context.getParameters().put("consumer.halfOpenInitialDelay", String.valueOf(consumerConfigProperties.getHalfOpenInitialDelay()));
+        context.getParameters().put("consumer.halfOpenDelay", String.valueOf(consumerConfigProperties.getHalfOpenDelay()));
+        return context;
     }
 }

@@ -3,11 +3,13 @@ server:
   tomcat:
     connection-timeout: 60000
 sunnyrpc:
-  zkServer: 8.141.93.226:2181
-  zkRoot: sunnyrpc
-  app.id: app1
-  app.namespace: public
-  app.env: dev
+  zk:
+    server: 8.141.93.226:2181
+    root: sunnyrpc
+  app:
+    id: app1
+    namespace: public
+    env: dev
   provider:
     metas:
       dc: bj

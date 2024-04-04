@@ -40,7 +40,7 @@ public class SunnyInvocationHandler implements InvocationHandler {
     public SunnyInvocationHandler(Class<?> clazz, RpcContext rpcContext){
         this.service = clazz;
         this.rpcContext = rpcContext;
-        this.httpInvoker= new OkHttpInvoker(Long.parseLong(rpcContext.getParameters().get("timeout")));
+        this.httpInvoker= new OkHttpInvoker(Long.parseLong(rpcContext.getParameters().get("consumer.timeout")));
 //        探活线程
         this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
         this.scheduledExecutorService.scheduleWithFixedDelay(this::openHalf, 10, 60, TimeUnit.SECONDS);
@@ -60,7 +60,7 @@ public class SunnyInvocationHandler implements InvocationHandler {
             return null;
         }
         RpcRequest rpcRequest = getRpcRequest(method, args);
-        int retries = Integer.parseInt(rpcContext.getParameters().get("retries"));
+        int retries = Integer.parseInt(rpcContext.getParameters().get("consumer.retries"));
         int retryTimes = 0;
         while (retries-retryTimes++ >= 0){
             try{
