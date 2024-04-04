@@ -135,4 +135,75 @@ public class TypeUtils {
 
 
     }
+    
+    public static Object castGeneric(final Object param, final Class<?> parameterType, final Type genericParameterType) {
+        log.debug("castGeneric: data = " + param);
+        log.debug("castGeneric: method.getReturnType() = " + parameterType);
+        log.debug("castGeneric: method.getGenericReturnType() = " + genericParameterType);
+        if (param instanceof Map map) { // data是map的情况包括两种，一种是HashMap，一种是JSONObject
+            if (Map.class.isAssignableFrom(parameterType)) { // 目标类型是 Map，此时data可能是map也可能是JO
+                log.debug(" ======> map -> map");
+                Map resultMap = new HashMap();
+                log.debug(genericParameterType.toString());
+                if (genericParameterType instanceof ParameterizedType parameterizedType) {
+                    Class<?> keyType = (Class<?>)parameterizedType.getActualTypeArguments()[0];
+                    Class<?> valueType = (Class<?>)parameterizedType.getActualTypeArguments()[1];
+                    log.debug("keyType  : " + keyType);
+                    log.debug("valueType: " + valueType);
+                    map.forEach(
+                            (k,v) -> {
+                                Object key = cast(k, keyType);
+                                Object value = cast(v, valueType);
+                                resultMap.put(key, value);
+                            }
+                    );
+                }
+                return resultMap;
+            }
+            if(param instanceof JSONObject jsonObject) {// 此时是Pojo，且数据是JO
+                log.debug(" ======> JSONObject -> Pojo");
+                return jsonObject.toJavaObject(parameterType);
+            }else if(!Map.class.isAssignableFrom(parameterType)){ // 此时是Pojo类型，数据是Map
+                log.debug(" ======> map -> Pojo");
+                return new JSONObject(map).toJavaObject(parameterType);
+            }else {
+                log.debug(" ======> map -> ?");
+                return param;
+            }
+        } else if (param instanceof List list) {
+            Object[] array = list.toArray();
+            if (parameterType.isArray()) {
+                log.debug(" ======> list -> []");
+                Class<?> componentType = parameterType.getComponentType();
+                Object resultArray = Array.newInstance(componentType, array.length);
+                for (int i = 0; i < array.length; i++) {
+                    if (componentType.isPrimitive() || componentType.getPackageName().startsWith("java")) {
+                        Array.set(resultArray, i, array[i]);
+                    } else {
+                        Object castObject = cast(array[i], componentType);
+                        Array.set(resultArray, i, castObject);
+                    }
+                }
+                return resultArray;
+            } else if (List.class.isAssignableFrom(parameterType)) {
+                log.debug(" ======> list -> list");
+                List<Object> resultList = new ArrayList<>(array.length);
+                log.debug(genericParameterType.toString());
+                if (genericParameterType instanceof ParameterizedType parameterizedType) {
+                    Type actualType = parameterizedType.getActualTypeArguments()[0];
+                    log.debug(actualType.toString());
+                    for (Object o : array) {
+                        resultList.add(cast(o, (Class<?>) actualType));
+                    }
+                } else {
+                    resultList.addAll(Arrays.asList(array));
+                }
+                return resultList;
+            } else {
+                return null;
+            }
+        } else {
+            return cast(param, parameterType);
+        }
+    }
 }

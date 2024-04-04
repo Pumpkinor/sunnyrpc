@@ -16,6 +16,9 @@ import org.sunny.sunnyrpccore.annotation.SunnyConsumer;
 import org.sunny.sunnyrpccore.consumer.ConsumerConfig;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SpringBootApplication
 @Import({ConsumerConfig.class})
@@ -59,20 +62,20 @@ public class SunnyrpcDemoConsumerApplication {
             Arrays.stream(userService.findUsers(users)).forEach(e->log.info(String.valueOf(e)));
 
 //            //            // 测试参数和返回值都是List类型
-//            log.info("Case 11. >>===[测试参数和返回值都是List类型]===");
-//            List<User> list = userService.getList(List.of(
-//                    new User("100", "KK100",100),
-//                    new User("101", "KK101",12)));
-//            list.forEach(e->log.info(String.valueOf(e)));
+            log.info("Case 11. >>===[测试参数和返回值都是List类型]===");
+            List<User> list = userService.getList(List.of(
+                    new User("100", "KK100",100),
+                    new User("101", "KK101",12)));
+            list.forEach(e->log.info(String.valueOf(e)));
 //
-//            // 测试参数和返回值都是Map类型
-//            log.info("Case 12. >>===[测试参数和返回值都是Map类型]===");
-//            Map<String, User> map = new HashMap<>();
-//            map.put("A200", new User("200", "KK200",20));
-//            map.put("A201", new User("201", "KK201",21));
-//            userService.getMap(map).forEach(
-//                    (k,v) -> log.info(k + " -> " + v)
-//            );
+            // 测试参数和返回值都是Map类型
+            log.info("Case 12. >>===[测试参数和返回值都是Map类型]===");
+            Map<String, User> map = new HashMap<>();
+            map.put("A200", new User("200", "KK200",20));
+            map.put("A201", new User("201", "KK201",21));
+            userService.getMap(map).forEach(
+                    (k,v) -> log.info(k + " -> " + v)
+            );
 //            
 //            log.info("Case 13. >>===[测试参数和返回值都是Boolean/boolean类型]===");
 //            log.info("userService.getFlag(false) = " + userService.getFlag(false));

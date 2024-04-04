@@ -9,6 +9,7 @@ import org.sunny.sunnyprcdemoapi.interfaces.UserAddrService;
 import org.sunny.sunnyprcdemoapi.interfaces.UserService;
 import org.sunny.sunnyrpccore.annotation.SunnyProvider;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -69,8 +70,11 @@ public class UserServiceImpl implements UserService, UserAddrService
     
     @Override
     public List<User> getList(final List<User> userList) {
-        return userList;
-    }
+        User[] users = userList.toArray(new User[userList.size()]);
+        System.out.println(" ==> userList.toArray()[] = ");
+        Arrays.stream(users).forEach(System.out::println);
+        userList.add(new User("2024","KK2024",33));
+        return userList;    }
     @Override
     public User[] findUsers(User[] users) {
         return users;
@@ -78,8 +82,12 @@ public class UserServiceImpl implements UserService, UserAddrService
     
     @Override
     public Map<String, User> getMap(final Map<String, User> userMap) {
-        return userMap;
-    }
+        userMap.values().forEach(x -> System.out.println(x.getClass()));
+        User[] users = userMap.values().toArray(new User[userMap.size()]);
+        System.out.println(" ==> userMap.values().toArray()[] = ");
+        Arrays.stream(users).forEach(System.out::println);
+        userMap.put("A2024", new User("2024","KK2024",33));
+        return userMap;    }
     
     @Override
     public Boolean getFlag(final boolean flag) {
