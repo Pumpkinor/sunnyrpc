@@ -2,6 +2,7 @@ package org.sunny.sunnyrpccore.provider;
 
 import org.sunny.sunnyrpccore.api.RpcRequest;
 import org.sunny.sunnyrpccore.api.RpcResponse;
+import org.sunny.sunnyrpccore.exception.RpcException;
 import org.sunny.sunnyrpccore.meta.ProviderMeta;
 import org.sunny.sunnyrpccore.utils.TypeUtils;
 
@@ -30,11 +31,9 @@ public class ProviderInvoker {
             rpcResponse.setData(result);
             return rpcResponse;
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
-            rpcResponse.setEx(new RuntimeException(e.getTargetException().getMessage()));
+            rpcResponse.setEx(new RpcException(e.getTargetException().getMessage()));
         } catch (IllegalAccessException e){
-            e.printStackTrace();
-            rpcResponse.setEx(new RuntimeException(e.getMessage()));
+            rpcResponse.setEx(new RpcException(e.getMessage()));
         }
         return rpcResponse;
     }

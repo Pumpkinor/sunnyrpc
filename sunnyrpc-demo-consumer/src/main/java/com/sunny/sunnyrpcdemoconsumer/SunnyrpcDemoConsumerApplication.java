@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.sunny.sunnyprcdemoapi.domian.Order;
 import org.sunny.sunnyprcdemoapi.domian.User;
 import org.sunny.sunnyprcdemoapi.interfaces.OrderService;
 import org.sunny.sunnyprcdemoapi.interfaces.UserService;
@@ -94,8 +95,8 @@ public class SunnyrpcDemoConsumerApplication {
 //            name = userService.getName(2222,"Tomas");
 //            log.info(name);
 //           TODO multiple interfaces how to test it
-//            Order order = orderService.getOrderById(404);
-//            log.info(order);
+            Order order = orderService.getOrderById(404);
+            log.info(String.valueOf(order));
         };
     }
 }

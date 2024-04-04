@@ -10,6 +10,7 @@ import okhttp3.RequestBody;
 import org.sunny.sunnyrpccore.api.RpcRequest;
 import org.sunny.sunnyrpccore.api.RpcResponse;
 import org.sunny.sunnyrpccore.consumer.HttpInvoker;
+import org.sunny.sunnyrpccore.exception.RpcException;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -42,8 +43,7 @@ public class OkHttpInvoker implements HttpInvoker {
         try {
             respJson = client.newCall(request).execute().body().string();
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            throw new RpcException(e, RpcException.UnknownEx);
         }
         log.debug("respJson is >>>>>>>>> " + respJson);
         return JSON.parseObject(respJson,RpcResponse.class);

@@ -11,6 +11,7 @@ import org.apache.zookeeper.CreateMode;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.sunny.sunnyrpccore.api.RegistryCenter;
+import org.sunny.sunnyrpccore.exception.ZkException;
 import org.sunny.sunnyrpccore.meta.InstanceMeta;
 import org.sunny.sunnyrpccore.meta.ServiceMeta;
 
@@ -65,7 +66,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath,"instance".getBytes(StandardCharsets.UTF_8));
             log.info("register service: " + serviceMeta + " instance: " + instanceMeta);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ZkException(e);
         }
         
     }
@@ -82,7 +83,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             client.delete().quietly().forPath(instancePath);
             log.info("unRegistered service: " + serviceMeta + " instance: " + instanceMeta);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ZkException(e);
         }
         
     }
@@ -97,7 +98,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             nodes.forEach(System.out::println);
             return mapToInstanceMeta(nodes);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ZkException(e);
         }
     }
     

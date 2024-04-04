@@ -8,6 +8,7 @@ import org.sunny.sunnyrpccore.api.RpcContext;
 import org.sunny.sunnyrpccore.api.RpcRequest;
 import org.sunny.sunnyrpccore.api.RpcResponse;
 import org.sunny.sunnyrpccore.consumer.http.OkHttpInvoker;
+import org.sunny.sunnyrpccore.exception.RpcException;
 import org.sunny.sunnyrpccore.meta.InstanceMeta;
 import org.sunny.sunnyrpccore.utils.MethodUtils;
 import org.sunny.sunnyrpccore.utils.TypeUtils;
@@ -68,8 +69,11 @@ public class SunnyInvocationHandler implements InvocationHandler {
             return TypeUtils.parseReturnData(method, data);
         }else {
             Exception ex = rpcResponse.getEx();
-            ex.printStackTrace();
-            throw new RuntimeException(ex);
+            if (ex instanceof RpcException exception){
+                throw exception;
+            }else {
+                throw new RpcException(ex, RpcException.UnknownEx);
+            }
         }
     }
     
