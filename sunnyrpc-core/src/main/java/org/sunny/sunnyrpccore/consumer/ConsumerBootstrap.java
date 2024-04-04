@@ -33,6 +33,12 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
     
     @Value("${sunnyrpc.app.env}")
     private String env;
+    
+    @Value("${sunnyrpc.retries}")
+    private String retries;
+    
+    @Value("${sunnyrpc.timeout}")
+    private String timeOut;
     ApplicationContext applicationContext;
     Environment environment;
 //    stub作为一个缓存 在多个类需要将consumer的实例作为属性注入的时候 可以提高性能
@@ -47,7 +53,8 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
         rpcContext.setRouter(router);
         rpcContext.setLoadBalancer(loadBalancer);
         rpcContext.setFilters(filters);
-        
+        rpcContext.getParameters().put("retries" ,retries);
+        rpcContext.getParameters().put("timeout" ,timeOut);
         
         String[] beanNames = applicationContext.getBeanDefinitionNames();
         for (final String beanName : beanNames) {

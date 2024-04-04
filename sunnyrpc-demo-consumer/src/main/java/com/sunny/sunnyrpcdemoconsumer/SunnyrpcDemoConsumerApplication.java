@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.sunny.sunnyprcdemoapi.domian.Order;
 import org.sunny.sunnyprcdemoapi.domian.User;
 import org.sunny.sunnyprcdemoapi.interfaces.OrderService;
 import org.sunny.sunnyprcdemoapi.interfaces.UserService;
@@ -38,10 +37,20 @@ public class SunnyrpcDemoConsumerApplication {
         return user;
     }
     
+    @RequestMapping("/find/")
+    public User find(@RequestParam("timeout") int timeout){
+        User user = userService.timeOut(timeout);
+        log.info(String.valueOf(user));
+        return user;
+    }
+    
     @Bean
     public ApplicationRunner consumer_runner(){
         return x ->{
-//            log.info("Case 14. >>===[测试参数和返回值都是User[]类型]===");
+//            log.info("Case . >>===[测试超时重试]===");
+//            User user = userService.timeOut(2000);
+//            System.out.println(user);
+            //            log.info("Case 14. >>===[测试参数和返回值都是User[]类型]===");
 //            User[] users = new User[]{
 //                    new User("100", "KK100",22),
 //                    new User("101", "KK101",23)};
@@ -95,8 +104,8 @@ public class SunnyrpcDemoConsumerApplication {
 //            name = userService.getName(2222,"Tomas");
 //            log.info(name);
 //           TODO multiple interfaces how to test it
-            Order order = orderService.getOrderById(404);
-            log.info(String.valueOf(order));
+//            Order order = orderService.getOrderById(404);
+//            log.info(String.valueOf(order));
         };
     }
 }

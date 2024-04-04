@@ -87,7 +87,22 @@ public class UserServiceImpl implements UserService, UserAddrService
     }
     
     @Override
+    public User timeOut(final int timeOut) {
+        String port = environment.getProperty("server.port");
+        if ("9997".equals(port)){
+            try {
+                Thread.sleep(timeOut);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return new User("21","Pop",34);
+    }
+    
+    @Override
     public Order getOrderById(final Integer orderId) {
         return null;
     }
+    
+    
 }

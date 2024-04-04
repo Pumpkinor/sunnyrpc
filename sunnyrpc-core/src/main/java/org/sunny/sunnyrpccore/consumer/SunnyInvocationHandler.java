@@ -15,16 +15,18 @@ import org.sunny.sunnyrpccore.utils.TypeUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.net.SocketTimeoutException;
 import java.util.List;
 @Slf4j
 public class SunnyInvocationHandler implements InvocationHandler {
     Class<?> service;
     RpcContext rpcContext;
-    HttpInvoker httpInvoker = new OkHttpInvoker();
+    HttpInvoker httpInvoker;
     
     public SunnyInvocationHandler(Class<?> clazz, RpcContext rpcContext){
         this.service = clazz;
         this.rpcContext = rpcContext;
+        this.httpInvoker= new OkHttpInvoker(Integer.parseInt(rpcContext.getParameters().get("timeout")));
     }
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
@@ -34,32 +36,44 @@ public class SunnyInvocationHandler implements InvocationHandler {
             return null;
         }
         RpcRequest rpcRequest = getRpcRequest(method, args);
-        
-        for (final Filter filter : rpcContext.getFilters()) {
-            Object preResult = filter.preFilter(rpcRequest);
-            //          TODO  这个if 会导致无法链式执行filter吧
-            if (preResult != null){
-                log.debug(filter.getClass().getName() + "=====> preFilter " + preResult);
-                return preResult;
+        int retries = Integer.parseInt(rpcContext.getParameters().get("retries"));
+        int retryTimes = 0;
+        while (retries-retryTimes++ >= 0){
+            try{
+                for (final Filter filter : rpcContext.getFilters()) {
+                    Object preResult = filter.preFilter(rpcRequest);
+                    //          TODO  这个if 会导致无法链式执行filter吧
+                    if (preResult != null){
+                        log.debug(filter.getClass().getName() + "=====> preFilter " + preResult);
+                        return preResult;
+                    }
+                }
+                List<InstanceMeta> instances = rpcContext.getRouter().route(rpcContext.getProviders());
+                InstanceMeta instance = rpcContext.getLoadBalancer().choose(instances);
+                log.debug("loadBalancer.choose(instances) ==> " + instance);
+                
+                RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, instance.toUrl());
+                
+                Object result = castReturnData(method, rpcResponse);
+                
+                for (final Filter filter : rpcContext.getFilters()) {
+                    Object postResult = filter.postFilter(rpcRequest, rpcResponse, result);
+                    //          TODO  这个if 会导致无法链式执行filter吧
+                    if(postResult != null) {
+                        log.debug(filter.getClass().getName() + "=====> postFilter " + postResult);
+                        return postResult;
+                    }
+                }
+                return result;
+            }catch (RuntimeException ex){
+                if (!(ex.getCause() instanceof SocketTimeoutException)){
+                    throw ex;
+                }else {
+                    log.info("retrying times : " + retryTimes);
+                }
             }
         }
-        List<InstanceMeta> instances = rpcContext.getRouter().route(rpcContext.getProviders());
-        InstanceMeta instance = rpcContext.getLoadBalancer().choose(instances);
-        log.debug("loadBalancer.choose(instances) ==> " + instance);
-        
-        RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, instance.toUrl());
-        
-        Object result = castReturnData(method, rpcResponse);
-        
-        for (final Filter filter : rpcContext.getFilters()) {
-            Object postResult = filter.postFilter(rpcRequest, rpcResponse, result);
-            //          TODO  这个if 会导致无法链式执行filter吧
-            if(postResult != null) {
-                log.debug(filter.getClass().getName() + "=====> postFilter " + postResult);
-                return postResult;
-            }
-        }
-        return result;
+        return null;
     }
     
     @Nullable
@@ -82,7 +96,7 @@ public class SunnyInvocationHandler implements InvocationHandler {
         RpcRequest rpcRequest = new RpcRequest();
         rpcRequest.setService(service.getCanonicalName());
         rpcRequest.setMethodSign(MethodUtils.getMethodSign(method));
-        rpcRequest.setParams(args);
+        rpcRequest.setArgs(args);
         return rpcRequest;
     }
 }

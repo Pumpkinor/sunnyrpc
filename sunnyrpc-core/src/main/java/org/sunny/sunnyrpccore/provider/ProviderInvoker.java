@@ -25,7 +25,7 @@ public class ProviderInvoker {
             ProviderMeta providerMeta = findProviderMeta(providerMetas, request.getMethodSign());
             // TODO test providerMeta == null
             Method method = providerMeta.getMethod();
-            Object[] actualParmas = processArgs(request.getParams(), method.getParameterTypes());
+            Object[] actualParmas = processArgs(request.getArgs(), method.getParameterTypes());
             Object result = method.invoke(providerMeta.getServiceImpl(), actualParmas);
             rpcResponse.setStatus(true);
             rpcResponse.setData(result);
