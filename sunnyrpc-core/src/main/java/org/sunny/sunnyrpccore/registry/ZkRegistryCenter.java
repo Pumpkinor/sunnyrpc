@@ -1,5 +1,6 @@
 package org.sunny.sunnyrpccore.registry;
 
+import com.alibaba.fastjson.JSON;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.RetryPolicy;
@@ -17,6 +18,7 @@ import org.sunny.sunnyrpccore.meta.ServiceMeta;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 @Slf4j
 public class ZkRegistryCenter implements RegistryCenter {
@@ -59,11 +61,11 @@ public class ZkRegistryCenter implements RegistryCenter {
         try {
 //            创建服务的持久化节点
             if (client.checkExists().forPath(servicePath) == null){
-                client.create().withMode(CreateMode.PERSISTENT).forPath(servicePath,"service".getBytes(StandardCharsets.UTF_8));
+                client.create().withMode(CreateMode.PERSISTENT).forPath(servicePath, serviceMeta.toMetas().getBytes());
             }
 //            创建instance的临时节点
             String instancePath = servicePath + "/" + instanceMeta.toPath();
-            client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath,"instance".getBytes(StandardCharsets.UTF_8));
+            client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath,instanceMeta.toMetas().getBytes(StandardCharsets.UTF_8));
             log.info("register service: " + serviceMeta + " instance: " + instanceMeta);
         } catch (Exception e) {
             throw new ZkException(e);
@@ -91,22 +93,37 @@ public class ZkRegistryCenter implements RegistryCenter {
     @Override
     public List<InstanceMeta> fetchAll(final ServiceMeta serviceMeta) {
         String servicePath = "/" + serviceMeta.toPath();
-        List<String> nodes = null;
+        List<String> nodes;
         try {
             nodes = client.getChildren().forPath(servicePath);
             log.debug("fetch all instance from zk: ");
             nodes.forEach(System.out::println);
-            return mapToInstanceMeta(nodes);
+            return mapToInstanceMeta(nodes, servicePath);
         } catch (Exception e) {
             throw new ZkException(e);
         }
     }
     
     @NotNull
-    private static List<InstanceMeta> mapToInstanceMeta(final List<String> nodes) {
+    private  List<InstanceMeta> mapToInstanceMeta(final List<String> nodes, final String servicePath) {
         return nodes.stream().map(x -> {
-            String[] infos = x.split("_");
-            return InstanceMeta.http(infos[0], Integer.valueOf(infos[1]));
+            String[] strArr = x.split("_");
+            InstanceMeta instance = InstanceMeta.http(strArr[0], Integer.valueOf(strArr[1]));
+            log.info("instance: " + instance.toUrl());
+            String nodePath = servicePath + "/" + x;
+            byte[] bytes;
+            try {
+                bytes = client.getData().forPath(nodePath);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            Map<String,Object> params = JSON.parseObject(new String(bytes));
+            log.info("mates: ");
+            params.forEach((k,v) -> {
+                log.info(k + " -> " +v);
+                instance.getParameters().put(k,v==null?null:v.toString());
+            });
+            return instance;
         }).collect(Collectors.toList());
     }
     

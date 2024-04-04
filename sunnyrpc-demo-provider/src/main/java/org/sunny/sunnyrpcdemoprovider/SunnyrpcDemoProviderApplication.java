@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.sunny.sunnyprcdemoapi.interfaces.UserService;
 import org.sunny.sunnyrpccore.api.RpcRequest;
 import org.sunny.sunnyrpccore.api.RpcResponse;
-import org.sunny.sunnyrpccore.provider.ProviderConfig;
+import org.sunny.sunnyrpccore.config.ProviderConfig;
 import org.sunny.sunnyrpccore.provider.ProviderInvoker;
 
 @SpringBootApplication

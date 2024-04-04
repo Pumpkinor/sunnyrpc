@@ -13,7 +13,7 @@ import org.sunny.sunnyprcdemoapi.domian.User;
 import org.sunny.sunnyprcdemoapi.interfaces.OrderService;
 import org.sunny.sunnyprcdemoapi.interfaces.UserService;
 import org.sunny.sunnyrpccore.annotation.SunnyConsumer;
-import org.sunny.sunnyrpccore.consumer.ConsumerConfig;
+import org.sunny.sunnyrpccore.config.ConsumerConfig;
 
 import java.util.Arrays;
 import java.util.HashMap;

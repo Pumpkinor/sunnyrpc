@@ -6,13 +6,14 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.sunny.sunnyrpccore.annotation.SunnyProvider;
 import org.sunny.sunnyrpccore.api.RegistryCenter;
+import org.sunny.sunnyrpccore.config.AppConfigProperties;
+import org.sunny.sunnyrpccore.config.ProviderConfigProperties;
 import org.sunny.sunnyrpccore.meta.InstanceMeta;
 import org.sunny.sunnyrpccore.meta.ProviderMeta;
 import org.sunny.sunnyrpccore.meta.ServiceMeta;
@@ -32,18 +33,17 @@ public class ProviderBootstrap implements ApplicationContextAware {
     @Getter
     private final MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
     private InstanceMeta instanceMeta;
-    
-    @Value("${server.port}")
     private String port;
+    private AppConfigProperties appProperties;
+    private ProviderConfigProperties providerProperties;
     
-    @Value("${sunnyrpc.app.id}")
-    private String app;
+    public ProviderBootstrap(String port, AppConfigProperties appProperties,
+                             ProviderConfigProperties providerProperties) {
+        this.port = port;
+        this.appProperties = appProperties;
+        this.providerProperties = providerProperties;
+    }
     
-    @Value("${sunnyrpc.app.namespace}")
-    private String namespace;
-    
-    @Value("${sunnyrpc.app.env}")
-    private String env;
     @SneakyThrows
     @PostConstruct
     public void initProviders() {
@@ -61,7 +61,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
         String ip = InetAddress.getLocalHost().getHostAddress();
 //        InetAddress.getLocalHost().getHostAddress()在windows下没问题，在linux下是根据主机名在hosts文件对应的ip来获取IP地址的
 //        String ip = InetAddress.getLocalHost().getHostAddress();
-        instanceMeta = InstanceMeta.http(ip, Integer.valueOf(port));
+        instanceMeta = InstanceMeta.http(ip, Integer.valueOf(port)).addParams(providerProperties.getMetas());
         skeleton.keySet().forEach(this::registerService);
         log.info("sunnyrpc-demo-provider start");
     }
@@ -73,13 +73,13 @@ public class ProviderBootstrap implements ApplicationContextAware {
     
     private void unRegisterService(String service) {
         log.info("start todo unRegisterService");
-        ServiceMeta serviceMeta = ServiceMeta.builder().app(app).namespace(namespace).env(env).name(service).build();
+        ServiceMeta serviceMeta = ServiceMeta.builder().app(appProperties.getId()).namespace(appProperties.getNamespace()).env(appProperties.getEnv()).name(service).build();
         rc.unRegister(serviceMeta, instanceMeta);
     }
     
     private void registerService(String service) {
         RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
-        ServiceMeta serviceMeta = ServiceMeta.builder().app(app).namespace(namespace).env(env).name(service).build();
+        ServiceMeta serviceMeta = ServiceMeta.builder().app(appProperties.getId()).namespace(appProperties.getNamespace()).env(appProperties.getEnv()).name(service).build();
         rc.register(serviceMeta, instanceMeta);
     }
     

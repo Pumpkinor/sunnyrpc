@@ -1,21 +1,34 @@
-package org.sunny.sunnyrpccore.provider;
+package org.sunny.sunnyrpccore.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.sunny.sunnyrpccore.api.RegistryCenter;
+import org.sunny.sunnyrpccore.provider.ProviderBootstrap;
+import org.sunny.sunnyrpccore.provider.ProviderInvoker;
 import org.sunny.sunnyrpccore.registry.ZkRegistryCenter;
 
 @Configuration
 @Slf4j
+@Import({AppConfigProperties.class, ProviderConfigProperties.class})
 public class ProviderConfig {
+    @Value("${server.port}")
+    private String port;
+    
+    @Autowired
+    AppConfigProperties appConfigProperties;
+    
+    @Autowired
+    ProviderConfigProperties providerConfigProperties;
 
     @Bean
     ProviderBootstrap providerBootstrap() {
-        return new ProviderBootstrap();
+        return new ProviderBootstrap(port, appConfigProperties, providerConfigProperties);
     }
     
     @Bean

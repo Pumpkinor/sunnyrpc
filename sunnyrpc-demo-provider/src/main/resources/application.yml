@@ -8,7 +8,12 @@ sunnyrpc:
   app.id: app1
   app.namespace: public
   app.env: dev
-
+  provider:
+    metas:
+      dc: bj
+      gray: false
+      unit: B001
+      
 logging:
   level:
     root: debug

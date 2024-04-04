@@ -1,4 +1,4 @@
-package org.sunny.sunnyrpccore.consumer;
+package org.sunny.sunnyrpccore.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +11,7 @@ import org.sunny.sunnyrpccore.api.LoadBalancer;
 import org.sunny.sunnyrpccore.api.RegistryCenter;
 import org.sunny.sunnyrpccore.api.Router;
 import org.sunny.sunnyrpccore.cluster.RoundRibonLoadBalancer;
+import org.sunny.sunnyrpccore.consumer.ConsumerBootstrap;
 import org.sunny.sunnyrpccore.meta.InstanceMeta;
 import org.sunny.sunnyrpccore.registry.ZkRegistryCenter;
 
