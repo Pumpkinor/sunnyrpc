@@ -19,13 +19,8 @@ public class RpcContext {
     // kkrpc.gtrace_id
     // gw -> service1 ->  service2(跨线程传递) ...
     // http headers
-    
-    public static ThreadLocal<Map<String,String>> ContextParameters = new ThreadLocal<>() {
-        @Override
-        protected Map<String, String> initialValue() {
-            return new HashMap<>();
-        }
-    };
+//    使用ThreadLocal来避免线程间数据干扰
+    public static ThreadLocal<Map<String,String>> ContextParameters = ThreadLocal.withInitial(HashMap::new);
     
     public static void setContextParameter(String key, String value) {
         ContextParameters.get().put(key, value);
