@@ -151,12 +151,12 @@ public class SunnyInvocationHandler implements InvocationHandler {
             Object data = rpcResponse.getData();
             return TypeUtils.parseReturnData(method, data);
         }else {
-            Exception ex = rpcResponse.getEx();
-            if (ex instanceof RpcException exception){
+            RpcException exception = rpcResponse.getEx();
+            if(exception != null) {
+                log.error("response error.", exception);
                 throw exception;
-            }else {
-                throw new RpcException(ex, RpcException.UnknownEx);
             }
+            return null;
         }
     }
     
