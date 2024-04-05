@@ -3,6 +3,7 @@ package org.sunny.sunnyrpccore.config;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -23,7 +24,7 @@ import java.util.List;
 
 @Configuration
 @Slf4j
-@Import({AppConfigProperties.class,ConsumerConfigProperties.class})
+@Import({AppConfigProperties.class,ConsumerConfigProperties.class, ZkConfigProperties.class})
 public class ConsumerConfig {
     @Autowired
     AppConfigProperties appConfigProperties;
@@ -31,6 +32,8 @@ public class ConsumerConfig {
     @Autowired
     ConsumerConfigProperties consumerConfigProperties;
     
+    @Autowired
+    ZkConfigProperties zkConfigProperties;
     @Bean
     ConsumerBootstrap createConsumerBootstrap(){
         return new ConsumerBootstrap();
@@ -73,8 +76,9 @@ public class ConsumerConfig {
     }
     
     @Bean(initMethod = "start", destroyMethod = "stop")
+    @ConditionalOnMissingBean
     public RegistryCenter consumer_rc(){
-        return new ZkRegistryCenter();
+        return new ZkRegistryCenter(zkConfigProperties);
     }
     
     @Bean

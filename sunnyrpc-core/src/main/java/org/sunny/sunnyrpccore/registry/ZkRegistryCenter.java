@@ -10,8 +10,8 @@ import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Value;
 import org.sunny.sunnyrpccore.api.RegistryCenter;
+import org.sunny.sunnyrpccore.config.ZkConfigProperties;
 import org.sunny.sunnyrpccore.exception.ZkException;
 import org.sunny.sunnyrpccore.meta.InstanceMeta;
 import org.sunny.sunnyrpccore.meta.ServiceMeta;
@@ -20,13 +20,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 @Slf4j
+
 public class ZkRegistryCenter implements RegistryCenter {
-    @Value("${sunnyrpc.zk.server:localhost:2181}")
-    String servers;
     
-    @Value("${sunnyrpc.zk.root:sunnyrpc}")
-    String root;
+    private ZkConfigProperties zkConfigProperties;
+    public ZkRegistryCenter(ZkConfigProperties zkConfigProperties){
+        this.zkConfigProperties = zkConfigProperties;
+    }
     
     private CuratorFramework client = null;
     private TreeCache treeCache = null;
@@ -34,8 +36,8 @@ public class ZkRegistryCenter implements RegistryCenter {
     public void start() {
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000,3);
         client =  CuratorFrameworkFactory.builder()
-                .connectString(servers)
-                .namespace(root)
+                .connectString(zkConfigProperties.getServer())
+                .namespace(zkConfigProperties.getRoot())
                 .retryPolicy(retryPolicy)
                 .build();
         client.start();

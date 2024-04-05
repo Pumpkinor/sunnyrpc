@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -16,9 +17,9 @@ import org.sunny.sunnyrpccore.transport.SpringBootTransport;
 
 @Configuration
 @Slf4j
-@Import({AppConfigProperties.class, ProviderConfigProperties.class, SpringBootTransport.class})
+@Import({AppConfigProperties.class, ProviderConfigProperties.class, ZkConfigProperties.class, SpringBootTransport.class})
 public class ProviderConfig {
-    @Value("${server.port}")
+    @Value("${server.port:9995}")
     private String port;
     
     @Autowired
@@ -26,7 +27,11 @@ public class ProviderConfig {
     
     @Autowired
     ProviderConfigProperties providerConfigProperties;
-
+    
+    @Autowired
+    ZkConfigProperties zkConfigProperties;
+    
+    
     @Bean
     ProviderBootstrap providerBootstrap() {
         return new ProviderBootstrap(port, appConfigProperties, providerConfigProperties);
@@ -37,8 +42,9 @@ public class ProviderConfig {
         return new ProviderInvoker(providerBootstrap);
     }
     @Bean(initMethod = "start", destroyMethod = "stop")
+    @ConditionalOnMissingBean
     public RegistryCenter provider_rc(){
-        return new ZkRegistryCenter();
+        return new ZkRegistryCenter(zkConfigProperties);
     }
     
     @Bean
