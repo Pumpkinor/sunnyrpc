@@ -8,6 +8,7 @@ import org.sunny.sunnyprcdemoapi.domian.User;
 import org.sunny.sunnyprcdemoapi.interfaces.UserAddrService;
 import org.sunny.sunnyprcdemoapi.interfaces.UserService;
 import org.sunny.sunnyrpccore.annotation.SunnyProvider;
+import org.sunny.sunnyrpccore.api.RpcContext;
 
 import java.util.Arrays;
 import java.util.List;
@@ -98,6 +99,13 @@ public class UserServiceImpl implements UserService, UserAddrService
     @Override
     public void setTimeOutPorts(final String timeOutPorts) {
         this.timeOutPorts = timeOutPorts;
+    }
+    
+    @Override
+    public String echoParameter(final String key) {
+        System.out.println(" ====>> RpcContext.ContextParameters: ");
+        RpcContext.ContextParameters.get().forEach((k, v)-> System.out.println(k+" -> " +v));
+        return RpcContext.getContextParameter(key);
     }
     
     @Override

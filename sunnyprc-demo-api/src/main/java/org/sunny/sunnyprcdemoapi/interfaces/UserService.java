@@ -34,4 +34,6 @@ public interface UserService {
     User timeOut(int timeOut);
     
     void setTimeOutPorts(final String timeOutPorts);
+    
+    String echoParameter(String key);
 }

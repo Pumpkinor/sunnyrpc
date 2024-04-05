@@ -15,6 +15,7 @@ import org.sunny.sunnyrpccore.api.RpcContext;
 import org.sunny.sunnyrpccore.cluster.GrayRouter;
 import org.sunny.sunnyrpccore.cluster.RoundRibonLoadBalancer;
 import org.sunny.sunnyrpccore.consumer.ConsumerBootstrap;
+import org.sunny.sunnyrpccore.filter.ParameterFilter;
 import org.sunny.sunnyrpccore.meta.InstanceMeta;
 import org.sunny.sunnyrpccore.registry.ZkRegistryCenter;
 
@@ -66,6 +67,10 @@ public class ConsumerConfig {
 //    public Filter mockFilter(){
 //        return new MockFilter();
 //    }
+    @Bean
+    public Filter parameterFilter() {
+        return new ParameterFilter();
+    }
     
     @Bean(initMethod = "start", destroyMethod = "stop")
     public RegistryCenter consumer_rc(){

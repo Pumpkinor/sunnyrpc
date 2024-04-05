@@ -17,6 +17,8 @@ import org.sunny.sunnyrpccore.api.RpcResponse;
 import org.sunny.sunnyrpccore.config.ProviderConfig;
 import org.sunny.sunnyrpccore.provider.ProviderInvoker;
 
+import java.util.HashMap;
+
 @SpringBootApplication
 @RestController
 @Import({ProviderConfig.class})
@@ -47,7 +49,7 @@ public class SunnyrpcDemoProviderApplication {
     @Bean
     ApplicationRunner providerRunner() {
         return args -> {
-            RpcRequest request = new RpcRequest("org.sunny.sunnyprcdemoapi.interfaces.UserService", "getUserById@1_class java.lang.String", new String[]{"1"});
+            RpcRequest request = new RpcRequest("org.sunny.sunnyprcdemoapi.interfaces.UserService", "getUserById@1_class java.lang.String", new String[]{"1"}, new HashMap<>());
             log.info("return is : " + providerInvoker.invokeRequest(request));
         };
     }

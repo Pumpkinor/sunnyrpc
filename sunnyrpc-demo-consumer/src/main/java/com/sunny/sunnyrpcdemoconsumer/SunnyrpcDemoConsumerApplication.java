@@ -15,13 +15,9 @@ import org.sunny.sunnyprcdemoapi.interfaces.OrderService;
 import org.sunny.sunnyprcdemoapi.interfaces.UserService;
 import org.sunny.sunnyrpccore.annotation.SunnyConsumer;
 import org.sunny.sunnyrpccore.api.Router;
+import org.sunny.sunnyrpccore.api.RpcContext;
 import org.sunny.sunnyrpccore.cluster.GrayRouter;
 import org.sunny.sunnyrpccore.config.ConsumerConfig;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @SpringBootApplication
 @Import({ConsumerConfig.class})
@@ -62,30 +58,39 @@ public class SunnyrpcDemoConsumerApplication {
     @Bean
     public ApplicationRunner consumer_runner(){
         return x ->{
+            System.out.println("Case 19. >>===[测试通过Context跨消费者和提供者进行传参]===");
+            String Key_Version = "rpc.version";
+            String Key_Message = "rpc.message";
+            RpcContext.setContextParameter(Key_Version, "v8");
+            String version = userService.echoParameter(Key_Version);
+            RpcContext.setContextParameter(Key_Message, "this is a test message");
+            String message = userService.echoParameter(Key_Message);
+            System.out.println(" ===> echo parameter from c->p->c: " + Key_Version + " -> " + version);
+            System.out.println(" ===> echo parameter from c->p->c: " + Key_Message + " -> " + message);
 //            log.info("Case . >>===[测试超时重试]===");
 //            User user = userService.timeOut(2000);
 //            System.out.println(user);
-                        log.info("Case 14. >>===[测试参数和返回值都是User[]类型]===");
-            User[] users = new User[]{
-                    new User("100", "KK100",22),
-                    new User("101", "KK101",23)};
-            Arrays.stream(userService.findUsers(users)).forEach(e->log.info(String.valueOf(e)));
-
-//            //            // 测试参数和返回值都是List类型
-            log.info("Case 11. >>===[测试参数和返回值都是List类型]===");
-            List<User> list = userService.getList(List.of(
-                    new User("100", "KK100",100),
-                    new User("101", "KK101",12)));
-            list.forEach(e->log.info(String.valueOf(e)));
+//                        log.info("Case 14. >>===[测试参数和返回值都是User[]类型]===");
+//            User[] users = new User[]{
+//                    new User("100", "KK100",22),
+//                    new User("101", "KK101",23)};
+//            Arrays.stream(userService.findUsers(users)).forEach(e->log.info(String.valueOf(e)));
 //
-            // 测试参数和返回值都是Map类型
-            log.info("Case 12. >>===[测试参数和返回值都是Map类型]===");
-            Map<String, User> map = new HashMap<>();
-            map.put("A200", new User("200", "KK200",20));
-            map.put("A201", new User("201", "KK201",21));
-            userService.getMap(map).forEach(
-                    (k,v) -> log.info(k + " -> " + v)
-            );
+////            //            // 测试参数和返回值都是List类型
+//            log.info("Case 11. >>===[测试参数和返回值都是List类型]===");
+//            List<User> list = userService.getList(List.of(
+//                    new User("100", "KK100",100),
+//                    new User("101", "KK101",12)));
+//            list.forEach(e->log.info(String.valueOf(e)));
+////
+//            // 测试参数和返回值都是Map类型
+//            log.info("Case 12. >>===[测试参数和返回值都是Map类型]===");
+//            Map<String, User> map = new HashMap<>();
+//            map.put("A200", new User("200", "KK200",20));
+//            map.put("A201", new User("201", "KK201",21));
+//            userService.getMap(map).forEach(
+//                    (k,v) -> log.info(k + " -> " + v)
+//            );
 //            
 //            log.info("Case 13. >>===[测试参数和返回值都是Boolean/boolean类型]===");
 //            log.info("userService.getFlag(false) = " + userService.getFlag(false));

@@ -1,5 +1,7 @@
 package org.sunny.sunnyrpccore.provider;
 
+import lombok.extern.slf4j.Slf4j;
+import org.sunny.sunnyrpccore.api.RpcContext;
 import org.sunny.sunnyrpccore.api.RpcRequest;
 import org.sunny.sunnyrpccore.api.RpcResponse;
 import org.sunny.sunnyrpccore.exception.RpcException;
@@ -12,6 +14,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 public class ProviderInvoker {
     private final ProviderBootstrap providerBootstrap;
     
@@ -20,6 +23,10 @@ public class ProviderInvoker {
     }
     
     public RpcResponse<Object> invokeRequest(RpcRequest request) {
+        log.debug(" ===> ProviderInvoker.invoke(request:{})", request);
+        if(!request.getParams().isEmpty()) {
+            request.getParams().forEach(RpcContext::setContextParameter);
+        }
         RpcResponse<Object> rpcResponse = new RpcResponse<>();
         List<ProviderMeta> providerMetas = providerBootstrap.getSkeleton().get(request.getService());
         try {
