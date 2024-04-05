@@ -12,10 +12,11 @@ import org.sunny.sunnyrpccore.api.RegistryCenter;
 import org.sunny.sunnyrpccore.provider.ProviderBootstrap;
 import org.sunny.sunnyrpccore.provider.ProviderInvoker;
 import org.sunny.sunnyrpccore.registry.ZkRegistryCenter;
+import org.sunny.sunnyrpccore.transport.SpringBootTransport;
 
 @Configuration
 @Slf4j
-@Import({AppConfigProperties.class, ProviderConfigProperties.class})
+@Import({AppConfigProperties.class, ProviderConfigProperties.class, SpringBootTransport.class})
 public class ProviderConfig {
     @Value("${server.port}")
     private String port;
