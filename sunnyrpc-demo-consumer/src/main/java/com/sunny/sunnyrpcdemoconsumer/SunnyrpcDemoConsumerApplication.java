@@ -6,21 +6,20 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.sunny.sunnyprcdemoapi.domian.User;
 import org.sunny.sunnyprcdemoapi.interfaces.OrderService;
 import org.sunny.sunnyprcdemoapi.interfaces.UserService;
+import org.sunny.sunnyrpccore.annotation.EnableSunnyRPC;
 import org.sunny.sunnyrpccore.annotation.SunnyConsumer;
 import org.sunny.sunnyrpccore.api.Router;
 import org.sunny.sunnyrpccore.api.RpcContext;
 import org.sunny.sunnyrpccore.cluster.GrayRouter;
-import org.sunny.sunnyrpccore.config.ConsumerConfig;
 
 @SpringBootApplication
-@Import({ConsumerConfig.class})
+@EnableSunnyRPC
 @RestController
 @Slf4j
 public class SunnyrpcDemoConsumerApplication {
