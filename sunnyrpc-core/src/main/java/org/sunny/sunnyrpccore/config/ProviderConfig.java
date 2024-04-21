@@ -38,8 +38,8 @@ public class ProviderConfig {
     }
     
     @Bean
-    ProviderInvoker providerInvoker(@Autowired ProviderBootstrap providerBootstrap) {
-        return new ProviderInvoker(providerBootstrap);
+    ProviderInvoker providerInvoker(@Autowired ProviderBootstrap providerBootstrap, @Autowired ProviderConfigProperties providerConfigProperties) {
+        return new ProviderInvoker(providerBootstrap, providerConfigProperties);
     }
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean

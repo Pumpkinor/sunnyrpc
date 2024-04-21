@@ -27,4 +27,43 @@ public class SunnyrpcDemoProviderApplication {
         userService.setTimeOutPorts(ports);
         return "ok : " + ports;
     }
+    
+//    @Autowired
+//    ProviderConfigProperties providerConfigProperties;
+//    
+//    @Bean
+//    ApplicationRunner providerRun(@Autowired ApplicationContext context) {
+//        return x -> {
+//            
+//            System.out.println(" =====> providerProperties.getMetas()");
+//            providerConfigProperties.getMetas().forEach((k,v)->System.out.println(k+":"+v));
+//            testAll();
+//        };
+//    }
+//    
+//    @Autowired
+//    SpringBootTransport transport;
+//    private void testAll() {
+//        // test 5 for traffic control
+//        RpcRequest request = new RpcRequest();
+//        request.setService("org.sunny.sunnyprcdemoapi.interfaces.UserService");
+//        request.setMethodSign("getUserById@1_String");
+//        request.setArgs(new Object[]{100});
+//        System.out.println("Provider Case 5. >>===[复杂测试：测试流量并发控制]===");
+//                for (int i = 0; i < 120; i++) {
+//                    try {
+//                        Thread.sleep(1000);
+//                        RpcResponse<Object> r = transport.invoke(request);
+//                        System.out.println(i + " ***>>> " +r.getData());
+//                    } catch (RpcException e) {
+//                        // ignore
+//                        System.out.println(i + " ***>>> " +e.getMessage() + " -> " + e.getErrorCode());
+//                    } catch (InterruptedException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                }
+//
+//
+//    }
+    
 }

@@ -4,22 +4,32 @@ import lombok.extern.slf4j.Slf4j;
 import org.sunny.sunnyrpccore.api.RpcContext;
 import org.sunny.sunnyrpccore.api.RpcRequest;
 import org.sunny.sunnyrpccore.api.RpcResponse;
+import org.sunny.sunnyrpccore.config.ProviderConfigProperties;
 import org.sunny.sunnyrpccore.exception.RpcException;
+import org.sunny.sunnyrpccore.governance.SlidingTimeWindow;
 import org.sunny.sunnyrpccore.meta.ProviderMeta;
 import org.sunny.sunnyrpccore.utils.TypeUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
 public class ProviderInvoker {
     private final ProviderBootstrap providerBootstrap;
-    
-    public ProviderInvoker(ProviderBootstrap providerBootstrap){
+    private final ProviderConfigProperties providerConfigProperties;
+    final Map<String, SlidingTimeWindow> windows = new HashMap<>();
+    final Integer trafficControl;
+    //    todo 改成map 去针对每个服务进行限流（配置文件也要针对改动）
+    //    todo 多个实例 共享一个限流值 （把map放到redis）
+    public ProviderInvoker(ProviderBootstrap providerBootstrap, ProviderConfigProperties providerConfigProperties){
         this.providerBootstrap = providerBootstrap;
+        this.providerConfigProperties = providerConfigProperties;
+        this.trafficControl = Integer.parseInt(providerConfigProperties.getMetas().getOrDefault("tc", "20"));
     }
     
     public RpcResponse<Object> invokeRequest(RpcRequest request) {
@@ -28,8 +38,24 @@ public class ProviderInvoker {
             request.getParams().forEach(RpcContext::setContextParameter);
         }
         RpcResponse<Object> rpcResponse = new RpcResponse<>();
-        List<ProviderMeta> providerMetas = providerBootstrap.getSkeleton().get(request.getService());
-        try {
+        String service = request.getService();
+        int trafficControl = Integer.parseInt(providerConfigProperties.getMetas().getOrDefault("tc", "20"));
+        log.debug(" ===>> trafficControl:{} for {}", trafficControl, service);
+        synchronized (windows) {
+            SlidingTimeWindow window = windows.computeIfAbsent(service, k -> new SlidingTimeWindow());
+            if (window.calcSum() >= trafficControl) {
+                String trafficMsg = "service " + service + " invoked in 30s/[" +
+                        window.getSum() + "] larger than tpsLimit = " + trafficControl;
+                System.out.println(window);
+                rpcResponse.setEx(new RpcException(trafficMsg, RpcException.ExceedLimitEx));
+                return rpcResponse;
+            }
+            
+            window.record(System.currentTimeMillis());
+            log.debug("service {} in window with {}", service, window.getSum());
+        }
+        try{
+            List<ProviderMeta> providerMetas = providerBootstrap.getSkeleton().get(service);
             ProviderMeta providerMeta = findProviderMeta(providerMetas, request.getMethodSign());
             // TODO test providerMeta == null
             Method method = providerMeta.getMethod();

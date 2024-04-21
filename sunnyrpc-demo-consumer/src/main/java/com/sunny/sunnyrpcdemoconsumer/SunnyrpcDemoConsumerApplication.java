@@ -17,6 +17,7 @@ import org.sunny.sunnyrpccore.annotation.SunnyConsumer;
 import org.sunny.sunnyrpccore.api.Router;
 import org.sunny.sunnyrpccore.api.RpcContext;
 import org.sunny.sunnyrpccore.cluster.GrayRouter;
+import org.sunny.sunnyrpccore.exception.RpcException;
 
 @SpringBootApplication
 @EnableSunnyRPC
@@ -125,6 +126,20 @@ public class SunnyrpcDemoConsumerApplication {
 //           TODO multiple interfaces how to test it
 //            Order order = orderService.getOrderById(404);
 //            log.info(String.valueOf(order));
+            
+            System.out.println("Provider Case 5. >>===[复杂测试：测试流量并发控制]===");
+            for (int i = 0; i < 120; i++) {
+                try {
+                    Thread.sleep(1000);
+                    User user = userService.getUserById(String.valueOf(i));
+                    System.out.println(i + " ***>>> " +user);
+                } catch (RpcException e) {
+                    // ignore
+                    System.out.println(i + " ***>>> " +e.getMessage() + " -> " + e.getErrorCode());
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         };
     }
 }
