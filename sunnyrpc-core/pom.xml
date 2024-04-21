@@ -5,11 +5,11 @@
 	<parent>
 		<groupId>org.sunny</groupId>
 		<artifactId>sunnyrpc</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>${sunnyrpc.version}</version>
 	</parent>
 	<groupId>org.sunny</groupId>
 	<artifactId>sunnyrpc-core</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>${sunnyrpc.version}</version>
 	<name>sunnyrpc-core</name>
 	<description>sunnyrpc-core 用来放置核心组件</description>
 

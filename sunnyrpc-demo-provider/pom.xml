@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.sunny</groupId>
         <artifactId>sunnyrpc</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>${sunnyrpc.version}</version>
     </parent>
     <groupId>org.sunny</groupId>
     <artifactId>sunnyrpc-demo-provider</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${sunnyrpc.version}</version>
     <name>sunnyrpc-demo-provider</name>
     <description>sunnyrpc-demo-provider</description>
     <properties>
@@ -46,13 +46,13 @@
         <dependency>
             <groupId>org.sunny</groupId>
             <artifactId>sunnyprc-demo-api</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${sunnyrpc.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.sunny</groupId>
             <artifactId>sunnyrpc-core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${sunnyrpc.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

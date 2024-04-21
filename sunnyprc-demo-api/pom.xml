@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.sunny</groupId>
         <artifactId>sunnyrpc</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>${sunnyrpc.version}</version>
     </parent>
     <groupId>org.sunny</groupId>
     <artifactId>sunnyprc-demo-api</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${sunnyrpc.version}</version>
     <name>sunnyprc-demo-api</name>
     <description>sunnyprc-demo-api</description>
     <properties>
