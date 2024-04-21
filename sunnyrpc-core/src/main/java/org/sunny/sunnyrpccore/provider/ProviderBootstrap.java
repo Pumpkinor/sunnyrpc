@@ -17,11 +17,11 @@ import org.sunny.sunnyrpccore.config.ProviderConfigProperties;
 import org.sunny.sunnyrpccore.meta.InstanceMeta;
 import org.sunny.sunnyrpccore.meta.ProviderMeta;
 import org.sunny.sunnyrpccore.meta.ServiceMeta;
+import org.sunny.sunnyrpccore.utils.IpUtils;
 import org.sunny.sunnyrpccore.utils.MethodUtils;
 
 import java.lang.reflect.Method;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.SocketException;
 import java.util.Arrays;
 import java.util.Map;
 @Slf4j
@@ -56,9 +56,10 @@ public class ProviderBootstrap implements ApplicationContextAware {
         providers.values().forEach(this::genInterface);
     }
     
-    public void start() throws UnknownHostException {
+    public void start() throws  SocketException {
 //        注册instance到zk 需要等待spring应用完全启动至可用状态
-        String ip = InetAddress.getLocalHost().getHostAddress();
+//        String ip = InetAddress.getLocalHost().getHostAddress();
+        String ip = IpUtils.getRealIp();
 //        InetAddress.getLocalHost().getHostAddress()在windows下没问题，在linux下是根据主机名在hosts文件对应的ip来获取IP地址的
 //        String ip = InetAddress.getLocalHost().getHostAddress();
         instanceMeta = InstanceMeta.http(ip, Integer.valueOf(port)).addParams(providerProperties.getMetas());
