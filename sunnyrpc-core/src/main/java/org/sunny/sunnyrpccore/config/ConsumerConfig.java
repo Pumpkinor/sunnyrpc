@@ -18,7 +18,7 @@ import org.sunny.sunnyrpccore.cluster.RoundRibonLoadBalancer;
 import org.sunny.sunnyrpccore.consumer.ConsumerBootstrap;
 import org.sunny.sunnyrpccore.filter.ParameterFilter;
 import org.sunny.sunnyrpccore.meta.InstanceMeta;
-import org.sunny.sunnyrpccore.registry.ZkRegistryCenter;
+import org.sunny.sunnyrpccore.registry.zk.ZkRegistryCenter;
 
 import java.util.List;
 
