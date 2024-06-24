@@ -2,13 +2,19 @@ server:
   port: 9990
 
 sunnyrpc:
-  register:
-    type: zookeeper/nacos
+  registry:
+    #    name: zk
+    name: sunny-registry
   transection:
-    type: http/netty
+    name: http/netty
   zk:
     server: 8.141.93.226:2181
     root: sunnyrpc
+  sunny-registry:
+    serverList:
+      - http://127.0.0.1:8484
+      - http://127.0.0.1:8485
+      - http://127.0.0.1:8486
   app:
     id: app1
     namespace: public

@@ -45,6 +45,8 @@ public class ProviderConfig {
     ProviderInvoker providerInvoker(@Autowired ProviderBootstrap providerBootstrap, @Autowired ProviderConfigProperties providerConfigProperties) {
         return new ProviderInvoker(providerBootstrap, providerConfigProperties);
     }
+    
+//    根据配置文件的 sunnyrpc.registry.name来选择加载不同的注册中心
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean
     @ConditionalOnProperty(name = "sunnyrpc.registry.name", havingValue = "zk")

@@ -53,14 +53,20 @@ public class SunnyRegistryCenter implements RegistryCenter {
         healthChecker.stop();
         log.info("SunnyRegistry client closed");
     }
-    
+      
     public void providerCheck() {
+//        开启了一个定时任务 来定时renew心跳
         healthChecker.providerCheck(() -> {
             RENEWS.keySet().forEach(
                     instance -> {
-                        Long timestamp = HttpInvoker.httpPost(JSON.toJSONString(instance),
-                                renewsPath(RENEWS.get(instance)), Long.class);
-                        log.info(" ====>>>> [SunnyRegistry] : renew instance {} at {}", instance, timestamp);
+                        try {
+                            Long timestamp = HttpInvoker.httpPost(JSON.toJSONString(instance),
+                                    renewsPath(RENEWS.get(instance)), Long.class);
+                            log.info(" ====>>>> [SunnyRegistry] : renew instance {} at {}", instance, timestamp);
+                        }catch (Exception ex){
+                            log.error(" ====>>>> [SunnyRegistry] : renew Exception:", ex);
+                        }
+                      
                     }
             );
         });

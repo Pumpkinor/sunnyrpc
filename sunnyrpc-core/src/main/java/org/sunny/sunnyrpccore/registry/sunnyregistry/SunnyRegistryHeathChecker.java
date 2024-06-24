@@ -60,8 +60,7 @@ public class SunnyRegistryHeathChecker {
     private void gracefulShutdown(ScheduledExecutorService executorService) {
         executorService.shutdown();
         try {
-            executorService.awaitTermination(1000, TimeUnit.MILLISECONDS);
-            if(!executorService.isTerminated()) {
+            if(executorService.awaitTermination(1000, TimeUnit.MILLISECONDS) && !executorService.isTerminated()) {
                 executorService.shutdownNow();
             }
         } catch (InterruptedException e) {
@@ -71,6 +70,4 @@ public class SunnyRegistryHeathChecker {
     public interface Callback {
         void call() throws Exception;
     }
-
-
 }
