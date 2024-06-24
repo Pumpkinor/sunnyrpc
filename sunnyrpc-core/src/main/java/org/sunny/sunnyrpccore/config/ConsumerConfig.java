@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -18,13 +19,14 @@ import org.sunny.sunnyrpccore.cluster.RoundRibonLoadBalancer;
 import org.sunny.sunnyrpccore.consumer.ConsumerBootstrap;
 import org.sunny.sunnyrpccore.filter.ParameterFilter;
 import org.sunny.sunnyrpccore.meta.InstanceMeta;
-import org.sunny.sunnyrpccore.registry.ZkRegistryCenter;
+import org.sunny.sunnyrpccore.registry.sunnyregistry.SunnyRegistryCenter;
+import org.sunny.sunnyrpccore.registry.zk.ZkRegistryCenter;
 
 import java.util.List;
 
 @Configuration
 @Slf4j
-@Import({AppConfigProperties.class,ConsumerConfigProperties.class, ZkConfigProperties.class})
+@Import({AppConfigProperties.class,ConsumerConfigProperties.class, SunnyRegistryConfigProperties.class, ZkConfigProperties.class})
 public class ConsumerConfig {
     @Autowired
     AppConfigProperties appConfigProperties;
@@ -34,6 +36,9 @@ public class ConsumerConfig {
     
     @Autowired
     ZkConfigProperties zkConfigProperties;
+    
+    @Autowired
+    SunnyRegistryConfigProperties sunnyRegistryConfigProperties;
     @Bean
     ConsumerBootstrap createConsumerBootstrap(){
         return new ConsumerBootstrap();
@@ -77,10 +82,17 @@ public class ConsumerConfig {
     
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean
-    public RegistryCenter consumer_rc(){
+    @ConditionalOnProperty(name = "sunnyrpc.registry.name", havingValue = "zk")
+    public RegistryCenter providerZkRegistryCenter(){
         return new ZkRegistryCenter(zkConfigProperties);
     }
     
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(name = "sunnyrpc.registry.name", havingValue = "sunny-registry")
+    public RegistryCenter providerSunnyRegistry(){
+        return new SunnyRegistryCenter(sunnyRegistryConfigProperties);
+    }
     @Bean
     public RpcContext createContext(@Autowired Router router,
                                     @Autowired LoadBalancer loadBalancer,

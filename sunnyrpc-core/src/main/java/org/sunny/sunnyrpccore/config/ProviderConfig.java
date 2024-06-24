@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -12,12 +13,13 @@ import org.springframework.core.annotation.Order;
 import org.sunny.sunnyrpccore.api.RegistryCenter;
 import org.sunny.sunnyrpccore.provider.ProviderBootstrap;
 import org.sunny.sunnyrpccore.provider.ProviderInvoker;
-import org.sunny.sunnyrpccore.registry.ZkRegistryCenter;
+import org.sunny.sunnyrpccore.registry.sunnyregistry.SunnyRegistryCenter;
+import org.sunny.sunnyrpccore.registry.zk.ZkRegistryCenter;
 import org.sunny.sunnyrpccore.transport.SpringBootTransport;
 
 @Configuration
 @Slf4j
-@Import({AppConfigProperties.class, ProviderConfigProperties.class, ZkConfigProperties.class, SpringBootTransport.class})
+@Import({AppConfigProperties.class, ProviderConfigProperties.class, ZkConfigProperties.class,SunnyRegistryConfigProperties.class, SpringBootTransport.class})
 public class ProviderConfig {
     @Value("${server.port:9995}")
     private String port;
@@ -30,6 +32,8 @@ public class ProviderConfig {
     
     @Autowired
     ZkConfigProperties zkConfigProperties;
+    @Autowired
+    SunnyRegistryConfigProperties sunnyRegistryConfigProperties;
     
     
     @Bean
@@ -41,10 +45,20 @@ public class ProviderConfig {
     ProviderInvoker providerInvoker(@Autowired ProviderBootstrap providerBootstrap, @Autowired ProviderConfigProperties providerConfigProperties) {
         return new ProviderInvoker(providerBootstrap, providerConfigProperties);
     }
+    
+//    根据配置文件的 sunnyrpc.registry.name来选择加载不同的注册中心
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean
-    public RegistryCenter provider_rc(){
+    @ConditionalOnProperty(name = "sunnyrpc.registry.name", havingValue = "zk")
+    public RegistryCenter providerZkRegistryCenter(){
         return new ZkRegistryCenter(zkConfigProperties);
+    }
+    
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(name = "sunnyrpc.registry.name", havingValue = "sunny-registry")
+    public RegistryCenter providerSunnyRegistry(){
+        return new SunnyRegistryCenter(sunnyRegistryConfigProperties);
     }
     
     @Bean
