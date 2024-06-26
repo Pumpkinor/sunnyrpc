@@ -41,6 +41,10 @@ public class InstanceMeta {
     public static InstanceMeta http(String host, Integer port) {
         return new InstanceMeta("http", host, port, "sunnyrpc");
     }
+
+    public static InstanceMeta http(String host, Integer port, String context) {
+        return new InstanceMeta("http", host, port, context);
+    }
     
     public InstanceMeta addParams(Map<String, String> params) {
         this.getParameters().putAll(params);
