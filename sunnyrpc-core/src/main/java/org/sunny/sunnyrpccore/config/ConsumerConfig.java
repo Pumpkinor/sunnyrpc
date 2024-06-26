@@ -19,6 +19,7 @@ import org.sunny.sunnyrpccore.cluster.RoundRibonLoadBalancer;
 import org.sunny.sunnyrpccore.consumer.ConsumerBootstrap;
 import org.sunny.sunnyrpccore.filter.ParameterFilter;
 import org.sunny.sunnyrpccore.meta.InstanceMeta;
+import org.sunny.sunnyrpccore.registry.nacos.NacosRegistryCenter;
 import org.sunny.sunnyrpccore.registry.sunnyregistry.SunnyRegistryCenter;
 import org.sunny.sunnyrpccore.registry.zk.ZkRegistryCenter;
 
@@ -33,12 +34,6 @@ public class ConsumerConfig {
     
     @Autowired
     ConsumerConfigProperties consumerConfigProperties;
-    
-    @Autowired
-    ZkConfigProperties zkConfigProperties;
-    
-    @Autowired
-    SunnyRegistryConfigProperties sunnyRegistryConfigProperties;
     @Bean
     ConsumerBootstrap createConsumerBootstrap(){
         return new ConsumerBootstrap();
@@ -79,20 +74,27 @@ public class ConsumerConfig {
     public Filter parameterFilter() {
         return new ParameterFilter();
     }
-    
+
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean
     @ConditionalOnProperty(name = "sunnyrpc.registry.name", havingValue = "zk")
-    public RegistryCenter providerZkRegistryCenter(){
+    public RegistryCenter providerZkRegistryCenter(@Autowired ZkConfigProperties zkConfigProperties) {
         return new ZkRegistryCenter(zkConfigProperties);
     }
-    
+
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean
     @ConditionalOnProperty(name = "sunnyrpc.registry.name", havingValue = "sunny-registry")
-    public RegistryCenter providerSunnyRegistry(){
+    public RegistryCenter providerSunnyRegistry(@Autowired SunnyRegistryConfigProperties sunnyRegistryConfigProperties) {
         return new SunnyRegistryCenter(sunnyRegistryConfigProperties);
     }
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(name = "sunnyrpc.registry.name", havingValue = "nacos")
+    public RegistryCenter providerNacosRegistry(@Autowired NacosConfigProperties nacosConfigProperties) {
+        return new NacosRegistryCenter(nacosConfigProperties);
+    }
+
     @Bean
     public RpcContext createContext(@Autowired Router router,
                                     @Autowired LoadBalancer loadBalancer,

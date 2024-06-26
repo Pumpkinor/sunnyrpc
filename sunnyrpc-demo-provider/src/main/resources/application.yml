@@ -2,10 +2,14 @@ server:
   port: 9999
   tomcat:
     connection-timeout: 60000
+spring:
+  application:
+    name: sunny-rpc-01
 sunnyrpc:
   registry:
     #    name: zk
-    name: sunny-registry
+    #    name: sunny-registry
+    name: nacos
   zk:
     server: 8.141.93.226:2181
     root: sunnyrpc
@@ -14,6 +18,12 @@ sunnyrpc:
       - http://127.0.0.1:8484
       - http://127.0.0.1:8485
       - http://127.0.0.1:8486
+  nacos-registry:
+    server-addrs:
+      - 192.168.2.102:8848
+    user-name: nacos
+    password: nacos
+    namespace: sunny-rpc
   app:
     id: app1
     namespace: public
