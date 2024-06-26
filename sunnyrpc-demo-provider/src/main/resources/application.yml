@@ -20,7 +20,7 @@ sunnyrpc:
       - http://127.0.0.1:8486
   nacos-registry:
     server-addrs:
-      - 192.168.2.102:8848
+      - 10.168.1.42:8848
     user-name: nacos
     password: nacos
     namespace: sunny-rpc
